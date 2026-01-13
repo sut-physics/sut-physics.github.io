@@ -37,6 +37,87 @@
             min-height: 100vh;
         }
 
+        /* Login Screen */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .login-box h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-box button:hover {
+            background: var(--primary);
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .app-content {
+            display: none;
+        }
+
+        .app-content.visible {
+            display: block;
+        }
+
         /* Header */
         .header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
@@ -555,9 +636,25 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1 id="projectTitle">การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์</h1>
-        <div class="subtitle" id="projectLeader">หัวหน้าโครงการ: รศ.ดร.อายุทธ ลิ้มพิรัตน์</div>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h2>Dashboard Login</h2>
+            <p>กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</p>
+            <input type="password" id="passwordInput" placeholder="รหัสผ่าน" onkeypress="if(event.key==='Enter')attemptLogin()">
+            <button onclick="attemptLogin()">เข้าสู่ระบบ</button>
+            <div id="loginError" class="login-error">รหัสผ่านไม่ถูกต้อง</div>
+        </div>
+    </div>
+
+    <!-- Main App Content -->
+    <div id="appContent" class="app-content">
+    <header class="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 id="projectTitle">การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์</h1>
+            <div class="subtitle" id="projectLeader">หัวหน้าโครงการ: รศ.ดร.อายุทธ ลิ้มพิรัตน์</div>
+        </div>
+        <button onclick="logout()" style="padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">ออกจากระบบ</button>
     </header>
 
     <nav class="nav-tabs">
@@ -665,8 +762,51 @@
             </div>
         </main>
     </div>
+    </div><!-- End appContent -->
 
     <script>
+        // ==================== PASSWORD PROTECTION ====================
+        // เปลี่ยนรหัสผ่านตรงนี้
+        const APP_PASSWORD = 'coe2024';
+
+        // Check if already logged in (session storage)
+        function checkLogin() {
+            if (sessionStorage.getItem('dashboard_authenticated') === 'true') {
+                showApp();
+            }
+        }
+
+        function attemptLogin() {
+            const password = document.getElementById('passwordInput').value;
+            const errorEl = document.getElementById('loginError');
+
+            if (password === APP_PASSWORD) {
+                sessionStorage.setItem('dashboard_authenticated', 'true');
+                showApp();
+            } else {
+                errorEl.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        function showApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('appContent').classList.add('visible');
+            initializeFirebase();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('dashboard_authenticated');
+            location.reload();
+        }
+
+        // Check login on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLogin();
+            setupEventListeners();
+        });
+
+        // ==================== FIREBASE ====================
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCK2tRVbsDR8P2v27Cltxtd71w98yOeAyw",
@@ -1011,12 +1151,6 @@
         let progressChart = null;
         let selectedSheetsForComparison = []; // Array of sheet indices for comparison
         const MAX_COMPARISON_SHEETS = 4;
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeFirebase();
-            setupEventListeners();
-        });
 
         // Firebase initialization and real-time sync
         function initializeFirebase() {

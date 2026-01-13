@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - การวิจัยขั้นแนวหน้าด้านฟิสิกส์</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a5f;
+            --primary-light: #2d5a87;
+            --secondary: #4a90d9;
+            --bg-light: #e8f4fc;
+            --bg-card: #ffffff;
+            --text-dark: #1e3a5f;
+            --text-muted: #6c757d;
+            --border: #d1e3f0;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: var(--primary);
+            padding: 0 20px;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tab:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-tab.active {
+            color: white;
+            border-bottom-color: var(--secondary);
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Main Container */
+        .container {
+            display: flex;
+            min-height: calc(100vh - 130px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 220px;
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
+
+        .sidebar-title {
+            padding: 10px 20px;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sheet-list {
+            list-style: none;
+        }
+
+        .sheet-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sheet-item:hover {
+            background: var(--bg-light);
+        }
+
+        .sheet-item.active {
+            background: var(--bg-light);
+            border-left-color: var(--secondary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .sheet-item .radio {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .sheet-item.active .radio {
+            border-color: var(--secondary);
+        }
+
+        .sheet-item.active .radio::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--secondary);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Project Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .info-box {
+            background: var(--bg-light);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .info-box .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .info-box .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Output Table */
+        .output-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .output-table th {
+            background: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .output-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .output-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .output-table .category-row {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .output-table .number {
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .output-table .number.target {
+            color: var(--secondary);
+        }
+
+        .output-table .number.completed {
+            color: var(--success);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: var(--success);
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar .fill.warning {
+            background: var(--warning);
+        }
+
+        .progress-bar .fill.danger {
+            background: var(--danger);
+        }
+
+        /* Comparison Page */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .chart-container h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        /* Names List */
+        .names-list {
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .names-list .name-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Page Tabs */
+        .page-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .page-tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .page-tab:hover {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        .page-tab.active {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .summary-card .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 180px;
+            }
+            .info-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Upload Section */
+        .upload-section {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border);
+            margin-top: 10px;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: var(--primary);
+        }
+
+        .upload-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Delete button for sheets */
+        .sheet-item .delete-btn {
+            margin-left: auto;
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: transparent;
+            color: #999;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+
+        .sheet-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .sheet-item .delete-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Comparison Sheet Selector */
+        .comparison-selector {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .comparison-selector h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .comparison-selector .help-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .sheet-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sheet-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: var(--bg-light);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .sheet-checkbox:hover {
+            border-color: var(--secondary);
+        }
+
+        .sheet-checkbox.selected {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .sheet-checkbox.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .sheet-checkbox input {
+            display: none;
+        }
+
+        .sheet-checkbox .check-icon {
+            width: 18px;
+            height: 18px;
+            border: 2px solid currentColor;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sheet-checkbox.selected .check-icon {
+            background: white;
+            border-color: white;
+        }
+
+        .sheet-checkbox.selected .check-icon::after {
+            content: '✓';
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        /* Sidebar scrollable for many sheets */
+        .sheet-list {
+            max-height: calc(100vh - 350px);
+            overflow-y: auto;
+        }
+
+        /* Upload status */
+        .upload-status {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            display: none;
+        }
+
+        .upload-status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .upload-status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 id="projectTitle">การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์</h1>
+        <div class="subtitle" id="projectLeader">หัวหน้าโครงการ: รศ.ดร.อายุทธ ลิ้มพิรัตน์</div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+        <button class="nav-tab" data-page="comparison">เปรียบเทียบ Sheet</button>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-title">ชื่อ Sheet</div>
+            <ul class="sheet-list" id="sheetList">
+                <!-- Dynamic sheet list -->
+            </ul>
+            <div class="upload-section">
+                <input type="file" id="fileInput" accept=".xlsx,.xls" multiple>
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17,8 12,3 7,8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    เพิ่ม Sheet ใหม่
+                </button>
+                <div id="uploadStatus" class="upload-status"></div>
+            </div>
+        </aside>
+
+        <main class="content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage">
+                <!-- Project Info -->
+                <div class="card">
+                    <div class="card-header">ข้อมูลโครงการ</div>
+                    <div class="card-body">
+                        <div class="info-grid" id="projectInfo">
+                            <!-- Dynamic project info -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Summary -->
+                <div class="summary-cards" id="summaryCards">
+                    <!-- Dynamic summary cards -->
+                </div>
+
+                <!-- Output Table -->
+                <div class="card">
+                    <div class="card-header">ผลผลิตที่คาดว่าจะได้รับ (Output)</div>
+                    <div class="card-body">
+                        <table class="output-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%">รายการ</th>
+                                    <th style="width: 10%">เป้าหมาย</th>
+                                    <th style="width: 10%">แล้วเสร็จ</th>
+                                    <th style="width: 20%">ความคืบหน้า</th>
+                                    <th style="width: 30%">รายชื่อ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="outputTable">
+                                <!-- Dynamic output data -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Page -->
+            <div id="comparisonPage" class="hidden">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">เปรียบเทียบความคืบหน้า Top 10 รายการ</h2>
+
+                <!-- Sheet Selector -->
+                <div class="comparison-selector">
+                    <h3>เลือก Sheet ที่ต้องการเปรียบเทียบ</h3>
+                    <div class="help-text">เลือกได้สูงสุด 4 Sheet (คลิกเพื่อเลือก/ยกเลิก)</div>
+                    <div class="sheet-checkboxes" id="sheetCheckboxes">
+                        <!-- Dynamic checkboxes -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">สรุปความคืบหน้า 10 รายการหลัก (เปรียบเทียบแต่ละ Sheet)</div>
+                    <div class="card-body">
+                        <table class="output-table" id="top10Table">
+                            <thead id="top10Header">
+                                <!-- Dynamic headers -->
+                            </thead>
+                            <tbody id="top10Body">
+                                <!-- Dynamic data -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="comparison-grid" style="margin-top: 20px;">
+                    <div class="chart-container">
+                        <h3>เปรียบเทียบ % ความคืบหน้า (แต่ละ Sheet)</h3>
+                        <canvas id="comparisonChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>ความคืบหน้ารวม (%)</h3>
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCK2tRVbsDR8P2v27Cltxtd71w98yOeAyw",
+            authDomain: "dashboard-coe-c0bde.firebaseapp.com",
+            databaseURL: "https://dashboard-coe-c0bde-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "dashboard-coe-c0bde",
+            storageBucket: "dashboard-coe-c0bde.firebasestorage.app",
+            messagingSenderId: "193190987342",
+            appId: "1:193190987342:web:813d0b3d7a12b1bc72651f"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Default data (used if database is empty)
+        const DEFAULT_DATA = {
+  "sheets": [
+    {
+      "name": "Format",
+      "info": {
+        "projectName": "การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์ (2567)",
+        "projectNameEng": "Frontier research in elementary particle physics and astrophysics (2567)",
+        "leader": "รศ.ดร.อายุทธ  ลิ้มพิรัตน์",
+        "duration": "1000",
+        "fiscalYear": "256789",
+        "budget": "9999999",
+        "projectCode": "ABC1234",
+        "startDate": "เริ่ม",
+        "endDate": "30/9/2567",
+        "extendDate": ""
+      },
+      "outputs": [
+        {
+          "name": "กำลังคนหรือหน่วยงาน",
+          "items": [
+            {"name": "ระดับปริญญาตรี (ร่วมวิจัย)", "target": 1000, "completed": 7, "names": ["aaa", "bbb", "ccc"]},
+            {"name": "ระดับปริญญาโท (ร่วมวิจัย)", "target": 3, "completed": 6, "names": ["aaaa", "bbbb"]},
+            {"name": "ระดับปริญญาเอก (ร่วมวิจัย)", "target": 4, "completed": 5, "names": []},
+            {"name": "นักวิจัยหน่วยงานรัฐ (ร่วมวิจัย)", "target": 5, "completed": 4, "names": []},
+            {"name": "เด็กและเยาวชน (ร่วมอบรม)", "target": 6, "completed": 3, "names": []},
+            {"name": "นิสิต/นักศึกษา ป.ตรี (ร่วมอบรม)", "target": 7, "completed": 2, "names": []},
+            {"name": "บุคลากรภาครัฐ (ร่วมอบรม)", "target": 8, "completed": 1, "names": []}
+          ]
+        },
+        {
+          "name": "ต้นฉบับบทความวิจัย",
+          "items": [
+            {"name": "TIER1", "target": 0, "completed": 0, "names": []},
+            {"name": "Q1", "target": 5, "completed": 5, "names": []},
+            {"name": "Q2", "target": 4, "completed": 4, "names": []},
+            {"name": "Q3", "target": 3, "completed": 3, "names": []},
+            {"name": "ระดับชาติ", "target": 2, "completed": 2, "names": []},
+            {"name": "Proceeding", "target": 1, "completed": 1, "names": []}
+          ]
+        },
+        {
+          "name": "หนังสือ",
+          "items": [{"name": "หนังสือ", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ต้นแบบผลิตภัณฑ์/เทคโนโลยี",
+          "items": [
+            {"name": "ต้นแบบผลิตภัณฑ์", "target": 10, "completed": 10, "names": []},
+            {"name": "เทคโนโลยี/กระบวนการใหม่", "target": 0, "completed": 0, "names": []},
+            {"name": "นวัตกรรมทางสังคม", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "ทรัพย์สินทางปัญญา",
+          "items": [{"name": "อนุสิทธิบัตร", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครื่องมือและโครงสร้างพื้นฐาน",
+          "items": [{"name": "เครื่องมือ ววน.", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ฐานข้อมูล/ระบบและกลไก",
+          "items": [{"name": "ฐานข้อมูล", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครือข่าย",
+          "items": [
+            {"name": "ระดับประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับนานาชาติ", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "การลงทุนวิจัยและนวัตกรรม",
+          "items": [
+            {"name": "กองทุนในประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FF67",
+      "info": {
+        "projectName": "การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์ (2567)",
+        "projectNameEng": "Frontier research in elementary particle physics and astrophysics (2567)",
+        "leader": "รศ.ดร.อายุทธ  ลิ้มพิรัตน์",
+        "duration": "1",
+        "fiscalYear": "2567",
+        "budget": "3200000",
+        "projectCode": "FF67",
+        "startDate": "1/10/2566",
+        "endDate": "30/9/2567",
+        "extendDate": "30/9/2568"
+      },
+      "outputs": [
+        {
+          "name": "กำลังคนหรือหน่วยงาน",
+          "items": [
+            {"name": "ระดับปริญญาตรี (ร่วมวิจัย)", "target": 10, "completed": 10, "names": ["นายอธิจิต เล็กสรรเสริญ", "นางสาวเจนนิเฟอร์ ฝอยจะโป๊ะ", "นายสิริโชค คุ้มวิริยะ", "นายวรายุทธ แก้วพินิจ", "นางสาวพลอยไพลิน เวียงสันเทียะ", "นางสาวปวีณา เนตถา", "นางสาวจิณณพัต พันศรี", "นางสาวเนาวรัตน์ ภะวัง", "นายภูตะวัน เหินชัย", "นายภูริพัฒน์ อินทนิจ"]},
+            {"name": "ระดับปริญญาโท (ร่วมวิจัย)", "target": 9, "completed": 9, "names": ["นายสิริโชค คุ้มวิริยะกุล", "นายอิทธิฤทธิ์ ฤทธิ์สุรกาญจน์", "นายพัทรดนย์ สุคนธ์", "นางสาวกมลวรรณ ขันธสมบัติ", "นายนครินทร์ มั่นเขตรวิทย์", "นายประทักษ์ ทองก้อนสิงห์", "นายชิติพัทธ์ ดีเสมอ", "นายถิรณัฐ บำเหน็จพันธุ์", "นางสาวยุวดี มะลาด"]},
+            {"name": "ระดับปริญญาเอก (ร่วมวิจัย)", "target": 8, "completed": 8, "names": ["นางสาวณัฐกฤตา นาก้อนทอง", "นางสาวพัชรวีร์ หมั่นสระเกษ", "นายอภิวิชญ์ กิตติรัตน์พัฒนา", "นายณัฐภัทร ทักษิณสิทธิ์", "Dr. Dea Aulia Kartini", "นายสัณหณัฐ ดีสมุทร"]},
+            {"name": "นักวิจัยหน่วยงานรัฐ (ร่วมวิจัย)", "target": 2, "completed": 2, "names": []},
+            {"name": "เด็กและเยาวชน (ร่วมอบรม)", "target": 225, "completed": 225, "names": []},
+            {"name": "นิสิต/นักศึกษา ป.ตรี (ร่วมอบรม)", "target": 0, "completed": 0, "names": []},
+            {"name": "บุคลากรภาครัฐ (ร่วมอบรม)", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "ต้นฉบับบทความวิจัย",
+          "items": [
+            {"name": "TIER1", "target": 4, "completed": 4, "names": []},
+            {"name": "Q1", "target": 6, "completed": 6, "names": []},
+            {"name": "Q2", "target": 0, "completed": 0, "names": []},
+            {"name": "Q3", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับชาติ", "target": 0, "completed": 0, "names": []},
+            {"name": "Proceeding", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "หนังสือ",
+          "items": [{"name": "หนังสือ", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ต้นแบบผลิตภัณฑ์/เทคโนโลยี",
+          "items": [
+            {"name": "ต้นแบบผลิตภัณฑ์", "target": 1, "completed": 1, "names": []},
+            {"name": "เทคโนโลยี/กระบวนการใหม่", "target": 1, "completed": 1, "names": []},
+            {"name": "นวัตกรรมทางสังคม", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "ทรัพย์สินทางปัญญา",
+          "items": [{"name": "อนุสิทธิบัตร", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครื่องมือและโครงสร้างพื้นฐาน",
+          "items": [{"name": "เครื่องมือ ววน.", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ฐานข้อมูล/ระบบและกลไก",
+          "items": [{"name": "ฐานข้อมูล", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครือข่าย",
+          "items": [
+            {"name": "ระดับประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับนานาชาติ", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "การลงทุนวิจัยและนวัตกรรม",
+          "items": [
+            {"name": "กองทุนในประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "FF68",
+      "info": {
+        "projectName": "การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์ (2567)",
+        "projectNameEng": "Frontier research in elementary particle physics and astrophysics (2567)",
+        "leader": "รศ.ดร.อายุทธ  ลิ้มพิรัตน์",
+        "duration": "1",
+        "fiscalYear": "2568",
+        "budget": "3200000",
+        "projectCode": "FF68",
+        "startDate": "1/10/2567",
+        "endDate": "30/9/2568",
+        "extendDate": "30/9/2569"
+      },
+      "outputs": [
+        {
+          "name": "กำลังคนหรือหน่วยงาน",
+          "items": [
+            {"name": "ระดับปริญญาตรี (ร่วมวิจัย)", "target": 5, "completed": 0, "names": []},
+            {"name": "ระดับปริญญาโท (ร่วมวิจัย)", "target": 5, "completed": 0, "names": []},
+            {"name": "ระดับปริญญาเอก (ร่วมวิจัย)", "target": 5, "completed": 0, "names": []},
+            {"name": "นักวิจัยหน่วยงานรัฐ (ร่วมวิจัย)", "target": 2, "completed": 0, "names": []},
+            {"name": "เด็กและเยาวชน (ร่วมอบรม)", "target": 100, "completed": 0, "names": []},
+            {"name": "นิสิต/นักศึกษา ป.ตรี (ร่วมอบรม)", "target": 0, "completed": 0, "names": []},
+            {"name": "บุคลากรภาครัฐ (ร่วมอบรม)", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "ต้นฉบับบทความวิจัย",
+          "items": [
+            {"name": "TIER1", "target": 3, "completed": 0, "names": []},
+            {"name": "Q1", "target": 5, "completed": 0, "names": []},
+            {"name": "Q2", "target": 0, "completed": 0, "names": []},
+            {"name": "Q3", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับชาติ", "target": 0, "completed": 0, "names": []},
+            {"name": "Proceeding", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "หนังสือ",
+          "items": [{"name": "หนังสือ", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ต้นแบบผลิตภัณฑ์/เทคโนโลยี",
+          "items": [
+            {"name": "ต้นแบบผลิตภัณฑ์", "target": 1, "completed": 0, "names": []},
+            {"name": "เทคโนโลยี/กระบวนการใหม่", "target": 1, "completed": 0, "names": []},
+            {"name": "นวัตกรรมทางสังคม", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "ทรัพย์สินทางปัญญา",
+          "items": [{"name": "อนุสิทธิบัตร", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครื่องมือและโครงสร้างพื้นฐาน",
+          "items": [{"name": "เครื่องมือ ววน.", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ฐานข้อมูล/ระบบและกลไก",
+          "items": [{"name": "ฐานข้อมูล", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครือข่าย",
+          "items": [
+            {"name": "ระดับประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับนานาชาติ", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "การลงทุนวิจัยและนวัตกรรม",
+          "items": [
+            {"name": "กองทุนในประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Helicity",
+      "info": {
+        "projectName": "การศึกษาแบริออนเรโซแนนซ์จากแทรนซิชันแอมพลิจูดเฮลิซิตี",
+        "projectNameEng": "Investigation of baryon resonances via helicity transition amplitudes",
+        "leader": "Prof. Dr. Yupeng Yan",
+        "duration": "3 ปี",
+        "fiscalYear": "2564",
+        "budget": "6500000",
+        "projectCode": "B05F640055",
+        "startDate": "1/10/2563",
+        "endDate": "30/9/2566",
+        "extendDate": ""
+      },
+      "outputs": [
+        {
+          "name": "กำลังคนหรือหน่วยงาน",
+          "items": [
+            {"name": "ระดับปริญญาตรี (ร่วมวิจัย)", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับปริญญาโท (ร่วมวิจัย)", "target": 2, "completed": 2, "names": []},
+            {"name": "ระดับปริญญาเอก (ร่วมวิจัย)", "target": 2, "completed": 2, "names": []},
+            {"name": "นักวิจัยหน่วยงานรัฐ (ร่วมวิจัย)", "target": 0, "completed": 0, "names": []},
+            {"name": "เด็กและเยาวชน (ร่วมอบรม)", "target": 0, "completed": 0, "names": []},
+            {"name": "นิสิต/นักศึกษา ป.ตรี (ร่วมอบรม)", "target": 0, "completed": 0, "names": []},
+            {"name": "บุคลากรภาครัฐ (ร่วมอบรม)", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "ต้นฉบับบทความวิจัย",
+          "items": [
+            {"name": "TIER1", "target": 0, "completed": 0, "names": []},
+            {"name": "Q1", "target": 3, "completed": 3, "names": []},
+            {"name": "Q2", "target": 0, "completed": 0, "names": []},
+            {"name": "Q3", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับชาติ", "target": 0, "completed": 0, "names": []},
+            {"name": "Proceeding", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "หนังสือ",
+          "items": [{"name": "หนังสือ", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ต้นแบบผลิตภัณฑ์/เทคโนโลยี",
+          "items": [
+            {"name": "ต้นแบบผลิตภัณฑ์", "target": 0, "completed": 0, "names": []},
+            {"name": "เทคโนโลยี/กระบวนการใหม่", "target": 0, "completed": 0, "names": []},
+            {"name": "นวัตกรรมทางสังคม", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "ทรัพย์สินทางปัญญา",
+          "items": [{"name": "อนุสิทธิบัตร", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครื่องมือและโครงสร้างพื้นฐาน",
+          "items": [{"name": "เครื่องมือ ววน.", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "ฐานข้อมูล/ระบบและกลไก",
+          "items": [{"name": "ฐานข้อมูล", "target": 0, "completed": 0, "names": []}]
+        },
+        {
+          "name": "เครือข่าย",
+          "items": [
+            {"name": "ระดับประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "ระดับนานาชาติ", "target": 0, "completed": 0, "names": []}
+          ]
+        },
+        {
+          "name": "การลงทุนวิจัยและนวัตกรรม",
+          "items": [
+            {"name": "กองทุนในประเทศ", "target": 0, "completed": 0, "names": []},
+            {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+        // Live data object (will be synced with Firebase)
+        let DATA = { sheets: [] };
+
+        // State
+        let currentSheet = 0;
+        let currentPage = 'dashboard';
+        let currentOutputType = 'hr';
+        let comparisonChart = null;
+        let progressChart = null;
+        let selectedSheetsForComparison = []; // Array of sheet indices for comparison
+        const MAX_COMPARISON_SHEETS = 4;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+            setupEventListeners();
+        });
+
+        // Firebase initialization and real-time sync
+        function initializeFirebase() {
+            const sheetsRef = database.ref('sheets');
+
+            // Listen for real-time updates
+            sheetsRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+
+                if (data) {
+                    // Convert object to array if needed
+                    DATA.sheets = Array.isArray(data) ? data : Object.values(data);
+                } else {
+                    // Database is empty, initialize with default data
+                    DATA.sheets = DEFAULT_DATA.sheets;
+                    saveAllToFirebase();
+                }
+
+                // Adjust currentSheet if out of bounds
+                if (currentSheet >= DATA.sheets.length) {
+                    currentSheet = Math.max(0, DATA.sheets.length - 1);
+                }
+
+                // Update selected sheets for comparison
+                selectedSheetsForComparison = selectedSheetsForComparison.filter(i => i < DATA.sheets.length);
+                if (selectedSheetsForComparison.length === 0 && DATA.sheets.length > 0) {
+                    selectedSheetsForComparison = DATA.sheets.slice(0, MAX_COMPARISON_SHEETS).map((_, i) => i);
+                }
+
+                // Re-render UI
+                renderSheetList();
+                if (currentPage === 'dashboard') {
+                    renderDashboard();
+                } else {
+                    renderComparison();
+                }
+
+                console.log('Data synced from Firebase:', DATA.sheets.length, 'sheets');
+            }, (error) => {
+                console.error('Firebase sync error:', error);
+                showStatus('error', 'ไม่สามารถเชื่อมต่อ Firebase ได้');
+            });
+        }
+
+        // Save all data to Firebase
+        function saveAllToFirebase() {
+            database.ref('sheets').set(DATA.sheets)
+                .then(() => console.log('Data saved to Firebase'))
+                .catch(err => console.error('Save error:', err));
+        }
+
+        // Save single sheet to Firebase
+        function saveSheetToFirebase(index) {
+            database.ref('sheets/' + index).set(DATA.sheets[index])
+                .then(() => console.log('Sheet saved:', index))
+                .catch(err => console.error('Save error:', err));
+        }
+
+        // Show status message
+        function showStatus(type, message) {
+            const statusEl = document.getElementById('uploadStatus');
+            statusEl.className = 'upload-status ' + type;
+            statusEl.textContent = message;
+            statusEl.style.display = 'block';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+        }
+
+        function setupEventListeners() {
+            // Navigation tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const page = e.target.dataset.page;
+                    switchPage(page);
+                });
+            });
+
+            // Page tabs (comparison)
+            document.querySelectorAll('.page-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const outputType = e.target.dataset.output;
+                    currentOutputType = outputType;
+                    document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderComparison();
+                });
+            });
+
+            // File upload handler
+            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+        }
+
+        function switchPage(page) {
+            currentPage = page;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.nav-tab[data-page="${page}"]`).classList.add('active');
+
+            if (page === 'dashboard') {
+                document.getElementById('dashboardPage').classList.remove('hidden');
+                document.getElementById('comparisonPage').classList.add('hidden');
+            } else {
+                document.getElementById('dashboardPage').classList.add('hidden');
+                document.getElementById('comparisonPage').classList.remove('hidden');
+                renderComparison();
+            }
+        }
+
+        function renderSheetList() {
+            const list = document.getElementById('sheetList');
+            list.innerHTML = DATA.sheets.map((sheet, idx) => `
+                <li class="sheet-item ${idx === currentSheet ? 'active' : ''}" data-index="${idx}">
+                    <span class="radio"></span>
+                    <span>${sheet.name}</span>
+                    <button class="delete-btn" data-index="${idx}" title="ลบ Sheet นี้">×</button>
+                </li>
+            `).join('');
+
+            list.querySelectorAll('.sheet-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    // Don't trigger if clicking delete button
+                    if (e.target.classList.contains('delete-btn')) return;
+                    const idx = parseInt(e.currentTarget.dataset.index);
+                    currentSheet = idx;
+                    renderSheetList();
+                    renderDashboard();
+                });
+            });
+
+            // Delete button handlers
+            list.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(e.target.dataset.index);
+                    deleteSheet(idx);
+                });
+            });
+        }
+
+        function renderDashboard() {
+            const sheet = DATA.sheets[currentSheet];
+            const info = sheet.info;
+
+            // Update header
+            document.getElementById('projectTitle').textContent = info.projectName || 'โครงการวิจัย';
+            document.getElementById('projectLeader').textContent = `หัวหน้าโครงการ: ${info.leader || '-'}`;
+
+            // Project info
+            document.getElementById('projectInfo').innerHTML = `
+                <div class="info-box" style="grid-column: span 2;">
+                    <div class="value" style="font-size: 1.2rem;">${info.projectCode || '-'}</div>
+                    <div class="label">รหัสโครงการ</div>
+                </div>
+                <div class="info-box" style="grid-column: span 2;">
+                    <div class="value" style="font-size: 0.9rem;">${info.projectNameEng || '-'}</div>
+                    <div class="label">ชื่อภาษาอังกฤษ</div>
+                </div>
+                <div class="info-box">
+                    <div class="value">${info.fiscalYear || '-'}</div>
+                    <div class="label">ปีงบประมาณ</div>
+                </div>
+                <div class="info-box">
+                    <div class="value">${info.startDate || '-'}</div>
+                    <div class="label">เริ่มโครงการ</div>
+                </div>
+                <div class="info-box">
+                    <div class="value">${info.endDate || '-'}</div>
+                    <div class="label">จบโครงการ</div>
+                </div>
+                <div class="info-box">
+                    <div class="value">${formatNumber(info.budget)}</div>
+                    <div class="label">งบประมาณ (บาท)</div>
+                </div>
+                <div class="info-box">
+                    <div class="value">${info.extendDate || '-'}</div>
+                    <div class="label">ขยายเวลาถึง</div>
+                </div>
+                <div class="info-box">
+                    <div class="value">${info.duration || '-'}</div>
+                    <div class="label">ระยะเวลาโครงการ</div>
+                </div>
+            `;
+
+            // Summary cards
+            const summaries = calculateSummary(sheet.outputs);
+            document.getElementById('summaryCards').innerHTML = summaries.map(s => `
+                <div class="summary-card">
+                    <div class="value">${s.completed}/${s.target}</div>
+                    <div class="label">${s.name}</div>
+                </div>
+            `).join('');
+
+            // Output table
+            let tableHTML = '';
+            sheet.outputs.forEach(cat => {
+                // Category header
+                tableHTML += `<tr class="category-row"><td colspan="5">${cat.name}</td></tr>`;
+
+                cat.items.forEach(item => {
+                    const percent = item.target > 0 ? Math.min((item.completed / item.target) * 100, 100) : 0;
+                    const fillClass = percent >= 100 ? '' : percent >= 50 ? 'warning' : 'danger';
+
+                    // Build names list
+                    let namesHTML = '-';
+                    if (item.names && item.names.length > 0) {
+                        namesHTML = `<div class="names-list">${item.names.map((n, i) => `<div class="name-item">${i+1}. ${n}</div>`).join('')}</div>`;
+                    }
+
+                    tableHTML += `
+                        <tr>
+                            <td style="padding-left: 30px">${item.name}</td>
+                            <td class="number target">${item.target || '-'}</td>
+                            <td class="number completed">${item.completed || '-'}</td>
+                            <td>
+                                <div class="progress-bar">
+                                    <div class="fill ${fillClass}" style="width: ${percent}%"></div>
+                                </div>
+                                <small style="color: #666">${percent.toFixed(0)}%</small>
+                            </td>
+                            <td>${namesHTML}</td>
+                        </tr>
+                    `;
+                });
+            });
+            document.getElementById('outputTable').innerHTML = tableHTML;
+        }
+
+        function calculateSummary(outputs) {
+            const summaryItems = [
+                { name: 'กำลังคน', idx: 0 },
+                { name: 'บทความวิจัย', idx: 1 },
+                { name: 'หนังสือ', idx: 2 },
+                { name: 'ต้นแบบ/เทคโนโลยี', idx: 3 },
+                { name: 'ทรัพย์สินทางปัญญา', idx: 4 },
+                { name: 'เครือข่าย', idx: 7 }
+            ];
+
+            return summaryItems.map(s => {
+                const cat = outputs[s.idx];
+                if (!cat) return { name: s.name, target: 0, completed: 0 };
+
+                const target = cat.items.reduce((sum, i) => sum + (i.target || 0), 0);
+                const completed = cat.items.reduce((sum, i) => sum + (i.completed || 0), 0);
+                return { name: s.name, target, completed };
+            });
+        }
+
+        function renderComparison() {
+            // First render the sheet selector
+            renderSheetSelector();
+            // Then render the comparison content
+            renderComparisonContent();
+        }
+
+        function renderComparisonContent() {
+            // Get only selected sheets
+            const selectedSheets = selectedSheetsForComparison.map(i => DATA.sheets[i]);
+            const sheetNames = selectedSheets.map(s => s.name);
+
+            // Define top 10 items to show
+            const top10Items = [
+                { category: 0, name: 'ระดับปริญญาตรี (ร่วมวิจัย)', label: 'นิสิต ป.ตรี' },
+                { category: 0, name: 'ระดับปริญญาโท (ร่วมวิจัย)', label: 'นิสิต ป.โท' },
+                { category: 0, name: 'ระดับปริญญาเอก (ร่วมวิจัย)', label: 'นิสิต ป.เอก' },
+                { category: 1, name: 'TIER1', label: 'บทความ TIER1' },
+                { category: 1, name: 'Q1', label: 'บทความ Q1' },
+                { category: 1, name: 'Q2', label: 'บทความ Q2' },
+                { category: 1, name: 'Q3', label: 'บทความ Q3' },
+                { category: 2, name: 'หนังสือ', label: 'หนังสือ' },
+                { category: 3, name: 'ต้นแบบผลิตภัณฑ์', label: 'ต้นแบบผลิตภัณฑ์' },
+                { category: 3, name: 'เทคโนโลยี/กระบวนการใหม่', label: 'เทคโนโลยีใหม่' }
+            ];
+
+            // Render Top 10 Table with selected sheets only
+            renderTop10Table(sheetNames, top10Items, selectedSheets);
+
+            // Calculate totals per selected sheet for chart
+            const progressPerSheet = selectedSheets.map(sheet => {
+                let totalTarget = 0;
+                let totalCompleted = 0;
+
+                top10Items.forEach(item => {
+                    const cat = sheet.outputs[item.category];
+                    if (cat) {
+                        const found = cat.items.find(i => i.name === item.name);
+                        if (found) {
+                            totalTarget += found.target || 0;
+                            totalCompleted += found.completed || 0;
+                        }
+                    }
+                });
+
+                return {
+                    target: totalTarget,
+                    completed: totalCompleted,
+                    percent: totalTarget > 0 ? (totalCompleted / totalTarget * 100).toFixed(1) : 0
+                };
+            });
+
+            // Render comparison chart
+            const ctx1 = document.getElementById('comparisonChart').getContext('2d');
+            if (comparisonChart) comparisonChart.destroy();
+
+            comparisonChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: sheetNames,
+                    datasets: [{
+                        label: 'ความคืบหน้า (%)',
+                        data: progressPerSheet.map(p => p.percent),
+                        backgroundColor: progressPerSheet.map(p =>
+                            parseFloat(p.percent) >= 100 ? 'rgba(40, 167, 69, 0.7)' :
+                            parseFloat(p.percent) >= 50 ? 'rgba(255, 193, 7, 0.7)' :
+                            'rgba(220, 53, 69, 0.7)'
+                        ),
+                        borderColor: progressPerSheet.map(p =>
+                            parseFloat(p.percent) >= 100 ? 'rgba(40, 167, 69, 1)' :
+                            parseFloat(p.percent) >= 50 ? 'rgba(255, 193, 7, 1)' :
+                            'rgba(220, 53, 69, 1)'
+                        ),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'ความคืบหน้ารวม 10 รายการหลัก'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: value => value + '%'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Progress chart (doughnut)
+            const ctx2 = document.getElementById('progressChart').getContext('2d');
+            if (progressChart) progressChart.destroy();
+
+            // Colors for up to 15 sheets
+            const chartColors = [
+                'rgba(74, 144, 217, 0.8)',
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(220, 53, 69, 0.8)',
+                'rgba(153, 102, 255, 0.8)',
+                'rgba(255, 159, 64, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(231, 233, 237, 0.8)',
+                'rgba(201, 203, 207, 0.8)',
+                'rgba(156, 39, 176, 0.8)',
+                'rgba(0, 150, 136, 0.8)',
+                'rgba(96, 125, 139, 0.8)'
+            ];
+
+            progressChart = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: sheetNames,
+                    datasets: [{
+                        data: progressPerSheet.map(p => p.percent),
+                        backgroundColor: chartColors.slice(0, sheetNames.length),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.label}: ${context.raw}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTop10Table(sheetNames, top10Items, sheets) {
+            // Use provided sheets or fall back to all sheets
+            const sheetsToUse = sheets || DATA.sheets;
+
+            // Header
+            let headerHTML = `<tr><th style="width: 20%">รายการ</th>`;
+            sheetNames.forEach(name => {
+                headerHTML += `<th style="text-align: center">${name}</th>`;
+            });
+            headerHTML += '</tr>';
+            document.getElementById('top10Header').innerHTML = headerHTML;
+
+            // Body
+            let bodyHTML = '';
+            top10Items.forEach((item, idx) => {
+                bodyHTML += `<tr><td>${idx + 1}. ${item.label}</td>`;
+
+                sheetsToUse.forEach(sheet => {
+                    const cat = sheet.outputs[item.category];
+                    let found = null;
+                    if (cat) {
+                        found = cat.items.find(i => i.name === item.name);
+                    }
+
+                    if (found && found.target > 0) {
+                        const percent = Math.min((found.completed / found.target) * 100, 100);
+                        const fillClass = percent >= 100 ? '' : percent >= 50 ? 'warning' : 'danger';
+                        bodyHTML += `
+                            <td style="text-align: center">
+                                <div style="font-weight: 600">${found.completed}/${found.target}</div>
+                                <div class="progress-bar" style="margin: 5px 0">
+                                    <div class="fill ${fillClass}" style="width: ${percent}%"></div>
+                                </div>
+                                <small style="color: #666">${percent.toFixed(0)}%</small>
+                            </td>
+                        `;
+                    } else {
+                        bodyHTML += `<td class="number" style="color: #999">-</td>`;
+                    }
+                });
+
+                bodyHTML += '</tr>';
+            });
+
+            // Total row
+            bodyHTML += `<tr style="font-weight: bold; background: #f8f9fa"><td>รวม</td>`;
+            sheetsToUse.forEach(sheet => {
+                let totalTarget = 0;
+                let totalCompleted = 0;
+
+                top10Items.forEach(item => {
+                    const cat = sheet.outputs[item.category];
+                    if (cat) {
+                        const found = cat.items.find(i => i.name === item.name);
+                        if (found) {
+                            totalTarget += found.target || 0;
+                            totalCompleted += found.completed || 0;
+                        }
+                    }
+                });
+
+                const percent = totalTarget > 0 ? (totalCompleted / totalTarget * 100).toFixed(1) : 0;
+                bodyHTML += `<td style="text-align: center">${totalCompleted}/${totalTarget} (${percent}%)</td>`;
+            });
+            bodyHTML += '</tr>';
+
+            document.getElementById('top10Body').innerHTML = bodyHTML;
+        }
+
+        function formatNumber(num) {
+            if (!num) return '-';
+            return Number(num).toLocaleString('th-TH');
+        }
+
+        // ==================== FILE UPLOAD FUNCTIONS ====================
+
+        async function handleFileUpload(event) {
+            const files = event.target.files;
+            if (!files.length) return;
+
+            const statusEl = document.getElementById('uploadStatus');
+            statusEl.className = 'upload-status';
+            statusEl.textContent = 'กำลังประมวลผล...';
+            statusEl.style.display = 'block';
+
+            let successCount = 0;
+            let errorMessages = [];
+
+            for (const file of files) {
+                try {
+                    const sheetsData = await parseExcelFile(file);
+                    sheetsData.forEach(sheetData => {
+                        // Check if sheet name already exists
+                        const existingIdx = DATA.sheets.findIndex(s => s.name === sheetData.name);
+                        if (existingIdx >= 0) {
+                            // Replace existing
+                            DATA.sheets[existingIdx] = sheetData;
+                        } else {
+                            // Add new
+                            DATA.sheets.push(sheetData);
+                        }
+                    });
+                    successCount += sheetsData.length;
+                } catch (err) {
+                    errorMessages.push(`${file.name}: ${err.message}`);
+                }
+            }
+
+            // Update UI and save to Firebase
+            if (successCount > 0) {
+                // Save to Firebase
+                saveAllToFirebase();
+
+                // Update comparison selection
+                selectedSheetsForComparison = DATA.sheets.slice(0, MAX_COMPARISON_SHEETS).map((_, i) => i);
+                // Note: UI will be updated by Firebase listener
+            }
+
+            // Show status
+            if (errorMessages.length === 0) {
+                statusEl.className = 'upload-status success';
+                statusEl.textContent = `เพิ่ม ${successCount} Sheet สำเร็จ (synced)`;
+            } else {
+                statusEl.className = 'upload-status error';
+                statusEl.textContent = errorMessages.join('; ');
+            }
+
+            // Clear file input
+            event.target.value = '';
+
+            // Hide status after 3 seconds
+            setTimeout(() => {
+                statusEl.style.display = 'none';
+            }, 3000);
+        }
+
+        async function parseExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+
+                        const parsedSheets = [];
+
+                        workbook.SheetNames.forEach(sheetName => {
+                            // Skip sheets that look like templates/instructions
+                            if (sheetName.toLowerCase() === 'readme' || sheetName.toLowerCase() === 'template') {
+                                return;
+                            }
+
+                            const worksheet = workbook.Sheets[sheetName];
+                            const sheetData = parseWorksheet(worksheet, sheetName);
+                            if (sheetData) {
+                                parsedSheets.push(sheetData);
+                            }
+                        });
+
+                        if (parsedSheets.length === 0) {
+                            reject(new Error('ไม่พบข้อมูลที่ถูกต้อง'));
+                        } else {
+                            resolve(parsedSheets);
+                        }
+                    } catch (err) {
+                        reject(new Error('ไม่สามารถอ่านไฟล์ได้: ' + err.message));
+                    }
+                };
+                reader.onerror = () => reject(new Error('ไม่สามารถอ่านไฟล์ได้'));
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        function parseWorksheet(worksheet, sheetName) {
+            // Helper function to get cell value
+            const getCell = (ref) => {
+                const cell = worksheet[ref];
+                return cell ? (cell.v !== undefined ? cell.v : '') : '';
+            };
+
+            // Extract project info (based on existing format)
+            const info = {
+                projectName: getCell('B2') || sheetName,
+                projectNameEng: getCell('B3') || '',
+                leader: getCell('B4') || '',
+                duration: String(getCell('B6') || ''),
+                fiscalYear: String(getCell('B7') || ''),
+                budget: String(getCell('B8') || ''),
+                projectCode: String(getCell('B9') || sheetName),
+                startDate: String(getCell('D6') || ''),
+                endDate: String(getCell('G6') || ''),
+                extendDate: String(getCell('G7') || '')
+            };
+
+            // Output categories with their row mappings
+            const outputCategories = [
+                {
+                    name: 'กำลังคนหรือหน่วยงาน',
+                    items: [
+                        { name: 'ระดับปริญญาตรี (ร่วมวิจัย)', row: 15 },
+                        { name: 'ระดับปริญญาโท (ร่วมวิจัย)', row: 16 },
+                        { name: 'ระดับปริญญาเอก (ร่วมวิจัย)', row: 17 },
+                        { name: 'นักวิจัยหน่วยงานรัฐ (ร่วมวิจัย)', row: 18 },
+                        { name: 'เด็กและเยาวชน (ร่วมอบรม)', row: 19 },
+                        { name: 'นิสิต/นักศึกษา ป.ตรี (ร่วมอบรม)', row: 20 },
+                        { name: 'บุคลากรภาครัฐ (ร่วมอบรม)', row: 21 }
+                    ]
+                },
+                {
+                    name: 'ต้นฉบับบทความวิจัย',
+                    items: [
+                        { name: 'TIER1', row: 23 },
+                        { name: 'Q1', row: 24 },
+                        { name: 'Q2', row: 25 },
+                        { name: 'Q3', row: 26 },
+                        { name: 'ระดับชาติ', row: 27 },
+                        { name: 'Proceeding', row: 28 }
+                    ]
+                },
+                {
+                    name: 'หนังสือ',
+                    items: [{ name: 'หนังสือ', row: 30 }]
+                },
+                {
+                    name: 'ต้นแบบผลิตภัณฑ์/เทคโนโลยี',
+                    items: [
+                        { name: 'ต้นแบบผลิตภัณฑ์', row: 32 },
+                        { name: 'เทคโนโลยี/กระบวนการใหม่', row: 33 },
+                        { name: 'นวัตกรรมทางสังคม', row: 34 }
+                    ]
+                },
+                {
+                    name: 'ทรัพย์สินทางปัญญา',
+                    items: [{ name: 'อนุสิทธิบัตร', row: 36 }]
+                },
+                {
+                    name: 'เครื่องมือและโครงสร้างพื้นฐาน',
+                    items: [{ name: 'เครื่องมือ ววน.', row: 38 }]
+                },
+                {
+                    name: 'ฐานข้อมูล/ระบบและกลไก',
+                    items: [{ name: 'ฐานข้อมูล', row: 40 }]
+                },
+                {
+                    name: 'เครือข่าย',
+                    items: [
+                        { name: 'ระดับประเทศ', row: 42 },
+                        { name: 'ระดับนานาชาติ', row: 43 }
+                    ]
+                },
+                {
+                    name: 'การลงทุนวิจัยและนวัตกรรม',
+                    items: [
+                        { name: 'กองทุนในประเทศ', row: 45 },
+                        { name: 'กองทุนต่างประเทศ', row: 46 }
+                    ]
+                }
+            ];
+
+            // Extract outputs
+            const outputs = outputCategories.map(cat => ({
+                name: cat.name,
+                items: cat.items.map(item => {
+                    const target = parseInt(getCell(`B${item.row}`)) || 0;
+                    const completed = parseInt(getCell(`D${item.row}`)) || 0;
+
+                    // Extract names from columns H-Q (up to 10 names)
+                    const names = [];
+                    const nameCols = ['H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q'];
+                    nameCols.forEach(col => {
+                        const name = getCell(`${col}${item.row}`);
+                        if (name && String(name).trim()) {
+                            names.push(String(name).trim());
+                        }
+                    });
+
+                    return {
+                        name: item.name,
+                        target,
+                        completed,
+                        names
+                    };
+                })
+            }));
+
+            return {
+                name: sheetName,
+                info,
+                outputs
+            };
+        }
+
+        function deleteSheet(index) {
+            if (DATA.sheets.length <= 1) {
+                alert('ไม่สามารถลบได้ ต้องมีอย่างน้อย 1 Sheet');
+                return;
+            }
+
+            const sheetName = DATA.sheets[index].name;
+            if (!confirm(`ต้องการลบ Sheet "${sheetName}" หรือไม่?`)) {
+                return;
+            }
+
+            DATA.sheets.splice(index, 1);
+
+            // Adjust current sheet if needed
+            if (currentSheet >= DATA.sheets.length) {
+                currentSheet = DATA.sheets.length - 1;
+            }
+
+            // Update comparison selection
+            selectedSheetsForComparison = selectedSheetsForComparison
+                .filter(i => i !== index)
+                .map(i => i > index ? i - 1 : i);
+
+            if (selectedSheetsForComparison.length === 0 && DATA.sheets.length > 0) {
+                selectedSheetsForComparison = [0];
+            }
+
+            // Save to Firebase
+            saveAllToFirebase();
+            showStatus('success', `ลบ Sheet "${sheetName}" แล้ว`);
+            // Note: UI will be updated by Firebase listener
+        }
+
+        // ==================== COMPARISON SHEET SELECTOR ====================
+
+        function renderSheetSelector() {
+            const container = document.getElementById('sheetCheckboxes');
+
+            container.innerHTML = DATA.sheets.map((sheet, idx) => {
+                const isSelected = selectedSheetsForComparison.includes(idx);
+                const isDisabled = !isSelected && selectedSheetsForComparison.length >= MAX_COMPARISON_SHEETS;
+
+                return `
+                    <label class="sheet-checkbox ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}"
+                           data-index="${idx}">
+                        <span class="check-icon"></span>
+                        <span>${sheet.name}</span>
+                    </label>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.sheet-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', (e) => {
+                    const idx = parseInt(e.currentTarget.dataset.index);
+                    toggleSheetSelection(idx);
+                });
+            });
+        }
+
+        function toggleSheetSelection(index) {
+            const currentIdx = selectedSheetsForComparison.indexOf(index);
+
+            if (currentIdx >= 0) {
+                // Deselect - but must have at least 1 selected
+                if (selectedSheetsForComparison.length > 1) {
+                    selectedSheetsForComparison.splice(currentIdx, 1);
+                }
+            } else {
+                // Select - check max limit
+                if (selectedSheetsForComparison.length < MAX_COMPARISON_SHEETS) {
+                    selectedSheetsForComparison.push(index);
+                    selectedSheetsForComparison.sort((a, b) => a - b);
+                }
+            }
+
+            renderSheetSelector();
+            renderComparisonContent();
+        }
+    </script>
+</body>
+</html>

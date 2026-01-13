@@ -2062,7 +2062,7 @@
                 fiscalYear: String(getCell('B7') || ''),
                 budget: String(getCell('B8') || ''),
                 projectCode: String(getCell('B9') || sheetName),
-                startDate: excelDateToString(getCell('E6')),
+                startDate: String(getCell('E6')),
                 endDate: String(getCell('G6') || ''),
                 extendDate: String(getCell('G7') || '')
             };

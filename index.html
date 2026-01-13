@@ -633,6 +633,189 @@
             background: #f8d7da;
             color: #721c24;
         }
+
+        /* Accordion Styles for Comparison Page */
+        .accordion-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .accordion-item {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+
+        .accordion-item:hover {
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+
+        .accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .accordion-header:hover {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%);
+        }
+
+        .accordion-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .accordion-header .header-number {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .accordion-header .header-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .accordion-header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .accordion-header .header-summary {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .accordion-header .arrow {
+            width: 24px;
+            height: 24px;
+            transition: transform 0.3s;
+        }
+
+        .accordion-item.open .accordion-header .arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background: #fafbfc;
+        }
+
+        .accordion-item.open .accordion-content {
+            max-height: 2000px;
+        }
+
+        .accordion-inner {
+            padding: 20px;
+        }
+
+        .accordion-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .accordion-table th {
+            background: var(--bg-light);
+            color: var(--primary);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .accordion-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .accordion-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .accordion-table tr:hover {
+            background: var(--bg-light);
+        }
+
+        .accordion-table .item-name {
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .accordion-table .sheet-data {
+            text-align: center;
+        }
+
+        .accordion-table .progress-mini {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .accordion-table .progress-mini .values {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .accordion-table .progress-mini .bar {
+            width: 80px;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .accordion-table .progress-mini .bar .fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+
+        .accordion-table .progress-mini .percent {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Summary row in accordion table */
+        .accordion-table .summary-row {
+            background: var(--bg-light);
+            font-weight: bold;
+        }
+
+        .accordion-table .summary-row td {
+            border-top: 2px solid var(--border);
+        }
+
+        /* No data placeholder */
+        .no-data {
+            color: #999;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -724,7 +907,7 @@
 
             <!-- Comparison Page -->
             <div id="comparisonPage" class="hidden">
-                <h2 style="margin-bottom: 20px; color: var(--primary);">เปรียบเทียบความคืบหน้า Top 10 รายการ</h2>
+                <h2 style="margin-bottom: 20px; color: var(--primary);">เปรียบเทียบผลผลิตระหว่าง Sheet</h2>
 
                 <!-- Sheet Selector -->
                 <div class="comparison-selector">
@@ -735,29 +918,23 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-header">สรุปความคืบหน้า 10 รายการหลัก (เปรียบเทียบแต่ละ Sheet)</div>
-                    <div class="card-body">
-                        <table class="output-table" id="top10Table">
-                            <thead id="top10Header">
-                                <!-- Dynamic headers -->
-                            </thead>
-                            <tbody id="top10Body">
-                                <!-- Dynamic data -->
-                            </tbody>
-                        </table>
+                <!-- Filter by Fiscal Year -->
+                <div class="comparison-selector" style="margin-top: 15px;">
+                    <h3>กรองตามปีงบประมาณ</h3>
+                    <div class="sheet-checkboxes" id="fiscalYearFilter">
+                        <!-- Dynamic fiscal year filters -->
                     </div>
                 </div>
 
-                <div class="comparison-grid" style="margin-top: 20px;">
-                    <div class="chart-container">
-                        <h3>เปรียบเทียบ % ความคืบหน้า (แต่ละ Sheet)</h3>
-                        <canvas id="comparisonChart"></canvas>
-                    </div>
-                    <div class="chart-container">
-                        <h3>ความคืบหน้ารวม (%)</h3>
-                        <canvas id="progressChart"></canvas>
-                    </div>
+                <!-- Comparison Chart - moved to top -->
+                <div class="chart-container" style="margin-bottom: 20px;">
+                    <h3>เปรียบเทียบ % ความคืบหน้า (แต่ละ Sheet)</h3>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+
+                <!-- 9 Categories Accordion -->
+                <div class="accordion-container" id="accordionContainer">
+                    <!-- Dynamic accordion items -->
                 </div>
             </div>
         </main>
@@ -835,7 +1012,7 @@
         "fiscalYear": "256789",
         "budget": "9999999",
         "projectCode": "ABC1234",
-        "startDate": "เริ่ม",
+        "startDate": "1/10/2566",
         "endDate": "30/9/2567",
         "extendDate": ""
       },
@@ -1148,8 +1325,8 @@
         let currentPage = 'dashboard';
         let currentOutputType = 'hr';
         let comparisonChart = null;
-        let progressChart = null;
         let selectedSheetsForComparison = []; // Array of sheet indices for comparison
+        let selectedFiscalYears = []; // Array of selected fiscal years for filter
         const MAX_COMPARISON_SHEETS = 4;
 
         // Firebase initialization and real-time sync
@@ -1397,10 +1574,91 @@
         }
 
         function renderComparison() {
-            // First render the sheet selector
+            // First render the fiscal year filter
+            renderFiscalYearFilter();
+            // Then render the sheet selector
             renderSheetSelector();
             // Then render the comparison content
             renderComparisonContent();
+        }
+
+        function renderFiscalYearFilter() {
+            const container = document.getElementById('fiscalYearFilter');
+
+            // Get unique fiscal years from all sheets
+            const fiscalYears = [...new Set(DATA.sheets.map(s => s.info.fiscalYear).filter(y => y && y !== '-'))].sort();
+
+            // Initialize selectedFiscalYears if empty (select all by default)
+            if (selectedFiscalYears.length === 0 && fiscalYears.length > 0) {
+                selectedFiscalYears = [...fiscalYears];
+            }
+
+            container.innerHTML = fiscalYears.map(year => {
+                const isSelected = selectedFiscalYears.includes(year);
+                return `
+                    <label class="sheet-checkbox ${isSelected ? 'selected' : ''}" data-year="${year}">
+                        <span class="check-icon"></span>
+                        <span>${year}</span>
+                    </label>
+                `;
+            }).join('');
+
+            // Add "แสดงทั้งหมด" button
+            if (fiscalYears.length > 1) {
+                container.innerHTML += `
+                    <label class="sheet-checkbox ${selectedFiscalYears.length === fiscalYears.length ? 'selected' : ''}" data-year="all" style="background: var(--secondary); color: white;">
+                        <span>แสดงทั้งหมด</span>
+                    </label>
+                `;
+            }
+
+            container.querySelectorAll('.sheet-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', (e) => {
+                    const year = e.currentTarget.dataset.year;
+                    toggleFiscalYearFilter(year, fiscalYears);
+                });
+            });
+        }
+
+        function toggleFiscalYearFilter(year, allYears) {
+            if (year === 'all') {
+                // Toggle all
+                if (selectedFiscalYears.length === allYears.length) {
+                    selectedFiscalYears = [allYears[0]]; // Keep at least one
+                } else {
+                    selectedFiscalYears = [...allYears];
+                }
+            } else {
+                const idx = selectedFiscalYears.indexOf(year);
+                if (idx >= 0) {
+                    // Deselect - but must have at least 1 selected
+                    if (selectedFiscalYears.length > 1) {
+                        selectedFiscalYears.splice(idx, 1);
+                    }
+                } else {
+                    selectedFiscalYears.push(year);
+                }
+            }
+
+            // Update sheet selection based on fiscal year filter
+            updateSheetSelectionByFiscalYear();
+            renderComparison();
+        }
+
+        function updateSheetSelectionByFiscalYear() {
+            // Filter sheets by selected fiscal years
+            const filteredIndices = DATA.sheets
+                .map((sheet, idx) => ({ sheet, idx }))
+                .filter(({ sheet }) => selectedFiscalYears.includes(sheet.info.fiscalYear))
+                .map(({ idx }) => idx);
+
+            // Update selectedSheetsForComparison to only include filtered sheets
+            selectedSheetsForComparison = selectedSheetsForComparison.filter(i => filteredIndices.includes(i));
+
+            // If no sheets selected, select up to MAX from filtered
+            if (selectedSheetsForComparison.length === 0 && filteredIndices.length > 0) {
+                selectedSheetsForComparison = filteredIndices.slice(0, MAX_COMPARISON_SHEETS);
+            }
         }
 
         function renderComparisonContent() {
@@ -1408,36 +1666,70 @@
             const selectedSheets = selectedSheetsForComparison.map(i => DATA.sheets[i]);
             const sheetNames = selectedSheets.map(s => s.name);
 
-            // Define top 10 items to show
-            const top10Items = [
-                { category: 0, name: 'ระดับปริญญาตรี (ร่วมวิจัย)', label: 'นิสิต ป.ตรี' },
-                { category: 0, name: 'ระดับปริญญาโท (ร่วมวิจัย)', label: 'นิสิต ป.โท' },
-                { category: 0, name: 'ระดับปริญญาเอก (ร่วมวิจัย)', label: 'นิสิต ป.เอก' },
-                { category: 1, name: 'TIER1', label: 'บทความ TIER1' },
-                { category: 1, name: 'Q1', label: 'บทความ Q1' },
-                { category: 1, name: 'Q2', label: 'บทความ Q2' },
-                { category: 1, name: 'Q3', label: 'บทความ Q3' },
-                { category: 2, name: 'หนังสือ', label: 'หนังสือ' },
-                { category: 3, name: 'ต้นแบบผลิตภัณฑ์', label: 'ต้นแบบผลิตภัณฑ์' },
-                { category: 3, name: 'เทคโนโลยี/กระบวนการใหม่', label: 'เทคโนโลยีใหม่' }
+            // Define 9 main categories with their output indices
+            const mainCategories = [
+                {
+                    number: 1,
+                    title: 'กำลังคนหรือหน่วยงานที่ได้รับการพัฒนาทักษะ',
+                    outputIndex: 0
+                },
+                {
+                    number: 2,
+                    title: 'ต้นฉบับบทความวิจัย (Manuscript)',
+                    outputIndex: 1
+                },
+                {
+                    number: 3,
+                    title: 'หนังสือ',
+                    outputIndex: 2
+                },
+                {
+                    number: 4,
+                    title: 'ต้นแบบผลิตภัณฑ์หรือเทคโนโลยี/กระบวนการใหม่หรือนวัตกรรมทางสังคม',
+                    outputIndex: 3
+                },
+                {
+                    number: 5,
+                    title: 'ทรัพย์สินทางปัญญา',
+                    outputIndex: 4
+                },
+                {
+                    number: 6,
+                    title: 'เครื่องมือและโครงสร้างพื้นฐาน (Facilities and Infrastructure) ด้าน ววน.',
+                    outputIndex: 5
+                },
+                {
+                    number: 7,
+                    title: 'ฐานข้อมูล/ระบบและกลไก',
+                    outputIndex: 6
+                },
+                {
+                    number: 8,
+                    title: 'เครือข่าย',
+                    outputIndex: 7
+                },
+                {
+                    number: 9,
+                    title: 'ข้อเสนอแนะเชิงนโยบาย (Policy Recommendation) และมาตรการ (Measures)',
+                    outputIndex: 8
+                }
             ];
 
-            // Render Top 10 Table with selected sheets only
-            renderTop10Table(sheetNames, top10Items, selectedSheets);
+            // Render accordion for each category
+            renderAccordion(mainCategories, selectedSheets, sheetNames);
 
-            // Calculate totals per selected sheet for chart
+            // Calculate totals per selected sheet for chart (using all categories)
             const progressPerSheet = selectedSheets.map(sheet => {
                 let totalTarget = 0;
                 let totalCompleted = 0;
 
-                top10Items.forEach(item => {
-                    const cat = sheet.outputs[item.category];
-                    if (cat) {
-                        const found = cat.items.find(i => i.name === item.name);
-                        if (found) {
-                            totalTarget += found.target || 0;
-                            totalCompleted += found.completed || 0;
-                        }
+                mainCategories.forEach(cat => {
+                    const output = sheet.outputs[cat.outputIndex];
+                    if (output && output.items) {
+                        output.items.forEach(item => {
+                            totalTarget += item.target || 0;
+                            totalCompleted += item.completed || 0;
+                        });
                     }
                 });
 
@@ -1494,120 +1786,142 @@
                     }
                 }
             });
-
-            // Progress chart (doughnut)
-            const ctx2 = document.getElementById('progressChart').getContext('2d');
-            if (progressChart) progressChart.destroy();
-
-            // Colors for up to 15 sheets
-            const chartColors = [
-                'rgba(74, 144, 217, 0.8)',
-                'rgba(40, 167, 69, 0.8)',
-                'rgba(255, 193, 7, 0.8)',
-                'rgba(220, 53, 69, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(231, 233, 237, 0.8)',
-                'rgba(201, 203, 207, 0.8)',
-                'rgba(156, 39, 176, 0.8)',
-                'rgba(0, 150, 136, 0.8)',
-                'rgba(96, 125, 139, 0.8)'
-            ];
-
-            progressChart = new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: sheetNames,
-                    datasets: [{
-                        data: progressPerSheet.map(p => p.percent),
-                        backgroundColor: chartColors.slice(0, sheetNames.length),
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => `${context.label}: ${context.raw}%`
-                            }
-                        }
-                    }
-                }
-            });
         }
 
-        function renderTop10Table(sheetNames, top10Items, sheets) {
-            // Use provided sheets or fall back to all sheets
-            const sheetsToUse = sheets || DATA.sheets;
+        function renderAccordion(categories, sheets, sheetNames) {
+            const container = document.getElementById('accordionContainer');
 
-            // Header
-            let headerHTML = `<tr><th style="width: 20%">รายการ</th>`;
-            sheetNames.forEach(name => {
-                headerHTML += `<th style="text-align: center">${name}</th>`;
-            });
-            headerHTML += '</tr>';
-            document.getElementById('top10Header').innerHTML = headerHTML;
-
-            // Body
-            let bodyHTML = '';
-            top10Items.forEach((item, idx) => {
-                bodyHTML += `<tr><td>${idx + 1}. ${item.label}</td>`;
-
-                sheetsToUse.forEach(sheet => {
-                    const cat = sheet.outputs[item.category];
-                    let found = null;
-                    if (cat) {
-                        found = cat.items.find(i => i.name === item.name);
-                    }
-
-                    if (found && found.target > 0) {
-                        const percent = Math.min((found.completed / found.target) * 100, 100);
-                        const fillClass = percent >= 100 ? '' : percent >= 50 ? 'warning' : 'danger';
-                        bodyHTML += `
-                            <td style="text-align: center">
-                                <div style="font-weight: 600">${found.completed}/${found.target}</div>
-                                <div class="progress-bar" style="margin: 5px 0">
-                                    <div class="fill ${fillClass}" style="width: ${percent}%"></div>
-                                </div>
-                                <small style="color: #666">${percent.toFixed(0)}%</small>
-                            </td>
-                        `;
-                    } else {
-                        bodyHTML += `<td class="number" style="color: #999">-</td>`;
-                    }
-                });
-
-                bodyHTML += '</tr>';
-            });
-
-            // Total row
-            bodyHTML += `<tr style="font-weight: bold; background: #f8f9fa"><td>รวม</td>`;
-            sheetsToUse.forEach(sheet => {
+            let html = '';
+            categories.forEach((cat, catIdx) => {
+                // Calculate summary for this category across all selected sheets
                 let totalTarget = 0;
                 let totalCompleted = 0;
 
-                top10Items.forEach(item => {
-                    const cat = sheet.outputs[item.category];
-                    if (cat) {
-                        const found = cat.items.find(i => i.name === item.name);
-                        if (found) {
-                            totalTarget += found.target || 0;
-                            totalCompleted += found.completed || 0;
-                        }
+                sheets.forEach(sheet => {
+                    const output = sheet.outputs[cat.outputIndex];
+                    if (output && output.items) {
+                        output.items.forEach(item => {
+                            totalTarget += item.target || 0;
+                            totalCompleted += item.completed || 0;
+                        });
                     }
                 });
 
-                const percent = totalTarget > 0 ? (totalCompleted / totalTarget * 100).toFixed(1) : 0;
-                bodyHTML += `<td style="text-align: center">${totalCompleted}/${totalTarget} (${percent}%)</td>`;
-            });
-            bodyHTML += '</tr>';
+                const overallPercent = totalTarget > 0 ? (totalCompleted / totalTarget * 100).toFixed(0) : 0;
 
-            document.getElementById('top10Body').innerHTML = bodyHTML;
+                // Get items for this category (from first sheet as reference)
+                const referenceOutput = sheets[0]?.outputs[cat.outputIndex];
+                const items = referenceOutput?.items || [];
+
+                html += `
+                    <div class="accordion-item" data-index="${catIdx}">
+                        <div class="accordion-header" onclick="toggleAccordion(${catIdx})">
+                            <div class="header-left">
+                                <span class="header-number">${cat.number}</span>
+                                <span class="header-title">${cat.title}</span>
+                            </div>
+                            <div class="header-right">
+                                <span class="header-summary">${totalCompleted}/${totalTarget} (${overallPercent}%)</span>
+                                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6,9 12,15 18,9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="accordion-inner">
+                                ${renderAccordionTable(items, sheets, sheetNames, cat.outputIndex)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderAccordionTable(items, sheets, sheetNames, outputIndex) {
+            if (items.length === 0) {
+                return '<p class="no-data">ไม่มีข้อมูล</p>';
+            }
+
+            // Build table header
+            let html = `
+                <table class="accordion-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%">รายการย่อย</th>
+                            ${sheetNames.map(name => `<th style="text-align: center">${name}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Track totals for summary row
+            const sheetTotals = sheets.map(() => ({ target: 0, completed: 0 }));
+
+            // Build rows for each item
+            items.forEach(item => {
+                html += `<tr><td class="item-name">${item.name}</td>`;
+
+                sheets.forEach((sheet, sheetIdx) => {
+                    const output = sheet.outputs[outputIndex];
+                    let found = null;
+                    if (output) {
+                        found = output.items.find(i => i.name === item.name);
+                    }
+
+                    if (found && (found.target > 0 || found.completed > 0)) {
+                        const percent = found.target > 0 ? Math.min((found.completed / found.target) * 100, 100) : 0;
+                        const fillColor = percent >= 100 ? 'var(--success)' : percent >= 50 ? 'var(--warning)' : 'var(--danger)';
+
+                        sheetTotals[sheetIdx].target += found.target || 0;
+                        sheetTotals[sheetIdx].completed += found.completed || 0;
+
+                        html += `
+                            <td class="sheet-data">
+                                <div class="progress-mini">
+                                    <span class="values">${found.completed}/${found.target}</span>
+                                    <div class="bar">
+                                        <div class="fill" style="width: ${percent}%; background: ${fillColor}"></div>
+                                    </div>
+                                    <span class="percent">${percent.toFixed(0)}%</span>
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        html += `<td class="sheet-data"><span class="no-data">-</span></td>`;
+                    }
+                });
+
+                html += '</tr>';
+            });
+
+            // Summary row
+            html += `<tr class="summary-row"><td><strong>รวม</strong></td>`;
+            sheetTotals.forEach(totals => {
+                const percent = totals.target > 0 ? (totals.completed / totals.target * 100).toFixed(0) : 0;
+                html += `
+                    <td class="sheet-data">
+                        <strong>${totals.completed}/${totals.target}</strong>
+                        <br><small style="color: var(--text-muted)">(${percent}%)</small>
+                    </td>
+                `;
+            });
+            html += '</tr>';
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            return html;
+        }
+
+        function toggleAccordion(index) {
+            const item = document.querySelector(`.accordion-item[data-index="${index}"]`);
+            if (item) {
+                item.classList.toggle('open');
+            }
         }
 
         function formatNumber(num) {
@@ -1721,6 +2035,24 @@
                 return cell ? (cell.v !== undefined ? cell.v : '') : '';
             };
 
+            // Helper function to convert Excel serial date to d/m/yyyy string
+            const excelDateToString = (value) => {
+                if (!value) return '';
+                const num = Number(value);
+                // Check if it's a valid Excel serial date (reasonable range for modern dates)
+                if (!isNaN(num) && num >= 1 && num <= 60000) {
+                    // Excel epoch is 1899-12-30 (accounting for the leap year bug)
+                    const excelEpoch = new Date(1899, 11, 30);
+                    const resultDate = new Date(excelEpoch.getTime() + num * 24 * 60 * 60 * 1000);
+                    const day = resultDate.getDate();
+                    const month = resultDate.getMonth() + 1;
+                    const year = resultDate.getFullYear() + 543; // Convert to Buddhist year
+                    return `${day}/${month}/${year}`;
+                }
+                // Return as-is if not a valid Excel date
+                return String(value);
+            };
+
             // Extract project info (based on existing format)
             const info = {
                 projectName: getCell('B2') || sheetName,
@@ -1730,7 +2062,7 @@
                 fiscalYear: String(getCell('B7') || ''),
                 budget: String(getCell('B8') || ''),
                 projectCode: String(getCell('B9') || sheetName),
-                startDate: String(getCell('D6') || ''),
+                startDate: excelDateToString(getCell('E6')),
                 endDate: String(getCell('G6') || ''),
                 extendDate: String(getCell('G7') || '')
             };
@@ -1871,7 +2203,12 @@
         function renderSheetSelector() {
             const container = document.getElementById('sheetCheckboxes');
 
-            container.innerHTML = DATA.sheets.map((sheet, idx) => {
+            // Filter sheets by selected fiscal years
+            const filteredSheets = DATA.sheets
+                .map((sheet, idx) => ({ sheet, idx }))
+                .filter(({ sheet }) => selectedFiscalYears.length === 0 || selectedFiscalYears.includes(sheet.info.fiscalYear));
+
+            container.innerHTML = filteredSheets.map(({ sheet, idx }) => {
                 const isSelected = selectedSheetsForComparison.includes(idx);
                 const isDisabled = !isSelected && selectedSheetsForComparison.length >= MAX_COMPARISON_SHEETS;
 
@@ -1879,10 +2216,14 @@
                     <label class="sheet-checkbox ${isSelected ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}"
                            data-index="${idx}">
                         <span class="check-icon"></span>
-                        <span>${sheet.name}</span>
+                        <span>${sheet.name} (${sheet.info.fiscalYear || '-'})</span>
                     </label>
                 `;
             }).join('');
+
+            if (filteredSheets.length === 0) {
+                container.innerHTML = '<span style="color: #999; font-style: italic;">ไม่มี Sheet ในปีงบประมาณที่เลือก</span>';
+            }
 
             container.querySelectorAll('.sheet-checkbox').forEach(checkbox => {
                 checkbox.addEventListener('click', (e) => {

@@ -2053,6 +2053,24 @@
                 return String(value);
             };
 
+            const formatDate = (value) => {
+                if (!value) return '';
+                
+                // กรณีที่ดึงมาเป็น Date Object (เช่นจาก ExcelJS)
+                if (value instanceof Date) {
+                    return value.toLocaleDateString('th-TH');
+                }
+                
+                // กรณีดึงมาเป็นตัวเลข Serial (แบบที่คุณเจอ 243628)
+                if (typeof value === 'number') {
+                    // สูตรแปลง Serial Date ของ Excel เป็น JS Date (โดยประมาณ)
+                    // หมายเหตุ: เลข 243628 ของคุณอาจต้องลบค่าต่างปี พ.ศ. ออกถ้าใช้ระบบสากล
+                    const date = new Date((value - 25569) * 86400 * 1000);
+                    return date.toLocaleDateString('th-TH');
+                }
+
+                return String(value);
+            };
             // Extract project info (based on existing format)
             const info = {
                 projectName: getCell('B2') || sheetName,
@@ -2062,9 +2080,9 @@
                 fiscalYear: String(getCell('B7') || ''),
                 budget: String(getCell('B8') || ''),
                 projectCode: String(getCell('B9') || sheetName),
-                startDate: String(getCell('E6')),
-                endDate: String(getCell('G6') || ''),
-                extendDate: String(getCell('G7') || '')
+                startDate: formatDate(getCell('E6')),
+                endDate: formatDate(getCell('G6')),
+                extendDate: formatDate(getCell('I6') || '')
             };
 
             // Output categories with their row mappings
@@ -2255,3 +2273,4 @@
     </script>
 </body>
 </html>
+

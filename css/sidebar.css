@@ -1,0 +1,130 @@
+.sheet-list {
+    list-style: none;
+    max-height: calc(100vh - 350px);
+    overflow-y: auto;
+}
+
+.sheet-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.sheet-item:hover {
+    background: var(--bg-light);
+}
+
+.sheet-item.active {
+    background: var(--bg-light);
+    border-left-color: var(--secondary);
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.sheet-item .radio {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    position: relative;
+}
+
+.sheet-item.active .radio {
+    border-color: var(--secondary);
+}
+
+.sheet-item.active .radio::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--secondary);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.upload-section {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+}
+
+.upload-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.upload-btn:hover {
+    background: var(--primary);
+}
+
+.upload-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+#fileInput {
+    display: none;
+}
+
+.sheet-item .delete-btn {
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s;
+}
+
+.sheet-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.sheet-item .delete-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.upload-status {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    display: none;
+}
+
+.upload-status.success {
+    display: block;
+    background: #d4edda;
+    color: #155724;
+}
+
+.upload-status.error {
+    display: block;
+    background: #f8d7da;
+    color: #721c24;
+}

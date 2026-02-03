@@ -62,23 +62,67 @@ def get_sheet_names(xlsx_path):
                 names.append(sheet.get('name'))
     return names
 
-def excel_date_to_string(excel_date):
-    """Convert Excel serial date to d/m/yyyy string"""
-    if not excel_date:
-        return ''
+def fix_excel_thai_date(value):
+    if not value or value == "":
+        return "-"
+    
     try:
-        serial = int(float(excel_date))
-        # Check if it's a valid Excel serial date (reasonable range: 1 to ~50000 for modern dates)
-        if 1 <= serial <= 60000:
-            # Excel epoch is 1900-01-01, but Excel incorrectly treats 1900 as leap year
-            base_date = datetime(1899, 12, 30)
-            result_date = base_date + timedelta(days=serial)
-            return result_date.strftime('%-d/%-m/%Y')
-        else:
-            # Not a valid Excel date, return as-is
-            return excel_date
+        # 1. พยายามแปลงเป็นตัวเลขดิบ (เช่น 243263)
+        serial = int(float(str(value).replace(',', '')))
+        
+        # 2. ถ้าเลขอยู่ในช่วง 24xxxx (แสดงว่าเป็นปี พ.ศ. ที่เพี้ยน)
+        if 240000 <= serial <= 250000:
+            # ลบส่วนต่าง 198328 ออกเพื่อให้กลับเป็นค่ามาตรฐาน Excel
+            correct_serial = serial - 198328
+            # แปลงจาก Serial เป็นวันที่ (Base date ของ Excel คือ 30 Dec 1899)
+            date_obj = datetime(1899, 12, 30) + timedelta(days=correct_serial)
+            return date_obj.strftime('%d/%m/%Y')
+        
+        # 3. ถ้าเป็นเลข 4xxxx (เป็น ค.ศ. ปกติ)
+        elif 40000 <= serial <= 60000:
+            date_obj = datetime(1899, 12, 30) + timedelta(days=serial)
+            return date_obj.strftime('%d/%m/%Y')
+            
+        return str(value)
+    except:
+        # ถ้าไม่ใช่ตัวเลข (เป็นข้อความอยู่แล้ว) ให้ส่งคืนค่าเดิม
+        return str(value)
+    
+def excel_date_to_string(serial):
+    if not serial or serial == "":
+        return "-"
+    try:
+        # Excel เก็บวันที่เริ่มจาก 1 Jan 1900
+        # ถ้าค่าที่ได้มาเป็นตัวเลข (int หรือ float) ให้แปลงตามสูตรนี้
+        serial_int = int(float(serial))
+        date_obj = datetime(1899, 12, 30) + timedelta(days=serial_int)
+        return date_obj.strftime('%d/%m/%Y')
     except (ValueError, TypeError):
-        return excel_date  # Return as-is if not a number
+        # ถ้าค่าที่ได้มาเป็นข้อความอยู่แล้ว (เช่น "1/10/2566") ให้ส่งคืนค่านั้นเลย
+        return str(serial) # Return as-is if not a number
+
+def format_excel_date(value):
+    if not value or value == "":
+        return "-"
+    
+    # ถ้าค่าที่ได้มาเป็นตัวเลข (เช่น 243628 หรือ 45200)
+    if isinstance(value, (int, float)) or (isinstance(value, str) and value.isdigit()):
+        try:
+            serial = int(float(value))
+            # ตรวจสอบว่าเป็นเลข Serial ปกติของ Excel (เช่น 40000+) หรือไม่
+            # ถ้าเป็นเลขหลักแสน (เช่น 243628) มักจะเป็นการดึงค่าผิด format จาก XML
+            # วิธีแก้ที่ง่ายที่สุดคือส่งคืนค่าดิบเพื่อไปเช็ค หรือใช้ timedelta แปลง
+            if serial > 60000: 
+                # กรณีเป็นเลขประหลาดจากการดึง XML ผิดพลาด
+                return str(value) 
+                
+            date_obj = datetime(1899, 12, 30) + timedelta(days=serial)
+            return date_obj.strftime('%d/%m/%Y')
+        except:
+            return str(value)
+            
+    # ถ้าค่าที่ได้มาเป็นข้อความอยู่แล้ว
+    return str(value)
 
 def extract_project_info(sheet_data, strings):
     """Extract project info from a sheet"""
@@ -89,8 +133,10 @@ def extract_project_info(sheet_data, strings):
         'duration': sheet_data.get('B6', ''),
         'fiscalYear': sheet_data.get('B7', ''),
         'budget': sheet_data.get('B8', ''),
+        'usedBudget': sheet_data.get('E8', ''),  # เพิ่มงบที่ใช้ไป
+        'remainingBudget': sheet_data.get('G8', ''), # เพิ่มงบคงเหลือ
         'projectCode': sheet_data.get('B9', ''),
-        'startDate': excel_date_to_string(sheet_data.get('E6', '')),
+        'startDate': sheet_data.get('E6', ''),
         'endDate': sheet_data.get('G6', ''),
         'extendDate': sheet_data.get('G7', '') if 'G7' in sheet_data else ''
     }
@@ -188,6 +234,8 @@ def extract_outputs(sheet_data):
         outputs.append(cat_data)
 
     return outputs
+
+
 
 def main():
     strings = parse_shared_strings(EXCEL_PATH)

@@ -1,0 +1,174 @@
+.accordion-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.accordion-item {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+}
+
+.accordion-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
+.accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    transition: all 0.3s;
+}
+
+.accordion-header:hover {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%);
+}
+
+.accordion-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.accordion-header .header-number {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.accordion-header .header-title {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.accordion-header .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.accordion-header .header-summary {
+    background: rgba(255,255,255,0.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.accordion-header .arrow {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s;
+}
+
+.accordion-item.open .accordion-header .arrow {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    background: #fafbfc;
+}
+
+.accordion-item.open .accordion-content {
+    max-height: 2000px;
+}
+
+.accordion-inner {
+    padding: 20px;
+}
+
+.accordion-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.accordion-table th {
+    background: var(--bg-light);
+    color: var(--primary);
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.accordion-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+.accordion-table tr:last-child td {
+    border-bottom: none;
+}
+
+.accordion-table tr:hover {
+    background: var(--bg-light);
+}
+
+.accordion-table .item-name {
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.accordion-table .sheet-data {
+    text-align: center;
+}
+
+.accordion-table .progress-mini {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.accordion-table .progress-mini .values {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.accordion-table .progress-mini .bar {
+    width: 80px;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.accordion-table .progress-mini .bar .fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s;
+}
+
+.accordion-table .progress-mini .percent {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.accordion-table .summary-row {
+    background: var(--bg-light);
+    font-weight: bold;
+}
+
+.accordion-table .summary-row td {
+    border-top: 2px solid var(--border);
+}

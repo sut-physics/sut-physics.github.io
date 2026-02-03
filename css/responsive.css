@@ -1,0 +1,11 @@
+@media (max-width: 768px) {
+    .sidebar {
+        width: 180px;
+    }
+    .info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .comparison-grid {
+        grid-template-columns: 1fr;
+    }
+}

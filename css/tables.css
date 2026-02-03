@@ -1,0 +1,74 @@
+.output-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.output-table th {
+    background: var(--primary);
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.output-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border);
+}
+
+.output-table tr:hover {
+    background: var(--bg-light);
+}
+
+.output-table .category-row {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.output-table .number {
+    text-align: center;
+    font-weight: 600;
+}
+
+.output-table .number.target {
+    color: var(--secondary);
+}
+
+.output-table .number.completed {
+    color: var(--success);
+}
+
+.progress-bar {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar .fill {
+    height: 100%;
+    background: var(--success);
+    transition: width 0.5s ease;
+}
+
+.progress-bar .fill.warning {
+    background: var(--warning);
+}
+
+.progress-bar .fill.danger {
+    background: var(--danger);
+}
+
+.names-list {
+    max-height: 150px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.names-list .name-item {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+}

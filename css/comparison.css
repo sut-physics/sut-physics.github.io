@@ -1,0 +1,96 @@
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.chart-container h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.comparison-selector {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.comparison-selector h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+.comparison-selector .help-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+.sheet-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sheet-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: var(--bg-light);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.sheet-checkbox:hover {
+    border-color: var(--secondary);
+}
+
+.sheet-checkbox.selected {
+    background: var(--secondary);
+    color: white;
+}
+
+.sheet-checkbox.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.sheet-checkbox input {
+    display: none;
+}
+
+.sheet-checkbox .check-icon {
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sheet-checkbox.selected .check-icon {
+    background: white;
+    border-color: white;
+}
+
+.sheet-checkbox.selected .check-icon::after {
+    content: '\2713';
+    color: var(--secondary);
+    font-weight: bold;
+    font-size: 12px;
+}

@@ -90,20 +90,6 @@ function parseWorksheet(worksheet, sheetName) {
         return cell ? (cell.v !== undefined ? cell.v : '') : '';
     };
 
-    var excelDateToString = function(value) {
-        if (!value) return '';
-        var num = Number(value);
-        if (!isNaN(num) && num >= 1 && num <= 60000) {
-            var excelEpoch = new Date(1899, 11, 30);
-            var resultDate = new Date(excelEpoch.getTime() + num * 24 * 60 * 60 * 1000);
-            var day = resultDate.getDate();
-            var month = resultDate.getMonth() + 1;
-            var year = resultDate.getFullYear() + 543;
-            return day + '/' + month + '/' + year;
-        }
-        return String(value);
-    };
-
     var formatDate = function(value) {
         if (!value) return '';
         if (value instanceof Date) {

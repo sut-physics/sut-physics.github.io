@@ -49,8 +49,3 @@ function saveAllToFirebase() {
         .catch(function(err) { console.error('Save error:', err); });
 }
 
-function saveSheetToFirebase(index) {
-    database.ref('sheets/' + index).set(DATA.sheets[index])
-        .then(function() { console.log('Sheet saved:', index); })
-        .catch(function(err) { console.error('Save error:', err); });
-}

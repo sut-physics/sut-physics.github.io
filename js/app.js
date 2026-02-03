@@ -34,32 +34,8 @@ function switchPage(page) {
     }
 }
 
-// เพิ่มฟังก์ชันโหลดข้อมูลใน app.js
-function initApp() {
-    fetch('data.json')
-        .then(response => response.json())
-        .then(data => {
-            console.log("ได้ข้อมูลใหม่จาก JSON:", data);
-            DATA = data; 
-            renderSheetList();
-            renderDashboard();
-
-            // เพิ่มบรรทัดนี้: ถ้าโหลด JSON สำเร็จ ให้ส่งค่างบประมาณไปเก็บที่ Firebase ด้วย
-            if (typeof saveDataToFirebase === 'function') {
-                saveDataToFirebase(DATA);
-                console.log("อัปเดตงบประมาณขึ้น Firebase สำเร็จ!");
-            }
-        })
-        .catch(err => {
-            console.warn("ใช้ข้อมูลจาก Firebase/Default แทน");
-            renderSheetList();
-            renderDashboard();
-        });
-}
-
 // รวม EventListener ไว้ที่เดียว
 document.addEventListener('DOMContentLoaded', function() {
     checkLogin();          // 1. ตรวจสอบสิทธิ์เข้าใช้งาน
     setupEventListeners(); // 2. เตรียมปุ่มกดต่างๆ ให้พร้อม
-    initApp();             // 3. ดึงข้อมูลจริงมาแสดงผล
 });

@@ -1,82 +1,13 @@
 function renderComparison() {
-    renderFiscalYearFilter();
+    // Auto-select sheets if none selected
+    if (selectedSheetsForComparison.length === 0 && DATA.sheets.length > 0) {
+        selectedSheetsForComparison = [];
+        for (var i = 0; i < Math.min(DATA.sheets.length, MAX_COMPARISON_SHEETS); i++) {
+            selectedSheetsForComparison.push(i);
+        }
+    }
     renderSheetSelector();
     renderComparisonContent();
-}
-
-function renderFiscalYearFilter() {
-    var container = document.getElementById('fiscalYearFilter');
-
-    var fiscalYearSet = {};
-    DATA.sheets.forEach(function(s) {
-        var y = s.info.fiscalYear;
-        if (y && y !== '-') fiscalYearSet[y] = true;
-    });
-    var fiscalYears = Object.keys(fiscalYearSet).sort();
-
-    if (selectedFiscalYears.length === 0 && fiscalYears.length > 0) {
-        selectedFiscalYears = fiscalYears.slice();
-    }
-
-    container.innerHTML = fiscalYears.map(function(year) {
-        var isSelected = selectedFiscalYears.indexOf(year) >= 0;
-        return '<label class="sheet-checkbox ' + (isSelected ? 'selected' : '') + '" data-year="' + year + '">' +
-            '<span class="check-icon"></span>' +
-            '<span>' + year + '</span>' +
-        '</label>';
-    }).join('');
-
-    if (fiscalYears.length > 1) {
-        container.innerHTML += '<label class="sheet-checkbox ' + (selectedFiscalYears.length === fiscalYears.length ? 'selected' : '') + '" data-year="all" style="background: var(--secondary); color: white;">' +
-            '<span>\u0e41\u0e2a\u0e14\u0e07\u0e17\u0e31\u0e49\u0e07\u0e2b\u0e21\u0e14</span>' +
-        '</label>';
-    }
-
-    container.querySelectorAll('.sheet-checkbox').forEach(function(checkbox) {
-        checkbox.addEventListener('click', function(e) {
-            var year = e.currentTarget.dataset.year;
-            toggleFiscalYearFilter(year, fiscalYears);
-        });
-    });
-}
-
-function toggleFiscalYearFilter(year, allYears) {
-    if (year === 'all') {
-        if (selectedFiscalYears.length === allYears.length) {
-            selectedFiscalYears = [allYears[0]];
-        } else {
-            selectedFiscalYears = allYears.slice();
-        }
-    } else {
-        var idx = selectedFiscalYears.indexOf(year);
-        if (idx >= 0) {
-            if (selectedFiscalYears.length > 1) {
-                selectedFiscalYears.splice(idx, 1);
-            }
-        } else {
-            selectedFiscalYears.push(year);
-        }
-    }
-
-    updateSheetSelectionByFiscalYear();
-    renderComparison();
-}
-
-function updateSheetSelectionByFiscalYear() {
-    var filteredIndices = [];
-    DATA.sheets.forEach(function(sheet, idx) {
-        if (selectedFiscalYears.indexOf(sheet.info.fiscalYear) >= 0) {
-            filteredIndices.push(idx);
-        }
-    });
-
-    selectedSheetsForComparison = selectedSheetsForComparison.filter(function(i) {
-        return filteredIndices.indexOf(i) >= 0;
-    });
-
-    if (selectedSheetsForComparison.length === 0 && filteredIndices.length > 0) {
-        selectedSheetsForComparison = filteredIndices.slice(0, MAX_COMPARISON_SHEETS);
-    }
 }
 
 function renderComparisonContent() {
@@ -168,25 +99,18 @@ function renderComparisonContent() {
 function renderSheetSelector() {
     var container = document.getElementById('sheetCheckboxes');
 
-    var filteredSheets = [];
-    DATA.sheets.forEach(function(sheet, idx) {
-        if (selectedFiscalYears.length === 0 || selectedFiscalYears.indexOf(sheet.info.fiscalYear) >= 0) {
-            filteredSheets.push({ sheet: sheet, idx: idx });
-        }
-    });
-
-    container.innerHTML = filteredSheets.map(function(item) {
-        var isSelected = selectedSheetsForComparison.indexOf(item.idx) >= 0;
+    container.innerHTML = DATA.sheets.map(function(sheet, idx) {
+        var isSelected = selectedSheetsForComparison.indexOf(idx) >= 0;
         var isDisabled = !isSelected && selectedSheetsForComparison.length >= MAX_COMPARISON_SHEETS;
 
-        return '<label class="sheet-checkbox ' + (isSelected ? 'selected' : '') + ' ' + (isDisabled ? 'disabled' : '') + '" data-index="' + item.idx + '">' +
+        return '<label class="sheet-checkbox ' + (isSelected ? 'selected' : '') + ' ' + (isDisabled ? 'disabled' : '') + '" data-index="' + idx + '">' +
             '<span class="check-icon"></span>' +
-            '<span>' + item.sheet.name + ' (' + (item.sheet.info.fiscalYear || '-') + ')</span>' +
+            '<span>' + sheet.name + '</span>' +
         '</label>';
     }).join('');
 
-    if (filteredSheets.length === 0) {
-        container.innerHTML = '<span style="color: #999; font-style: italic;">\u0e44\u0e21\u0e48\u0e21\u0e35 Sheet \u0e43\u0e19\u0e1b\u0e35\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e17\u0e35\u0e48\u0e40\u0e25\u0e37\u0e2d\u0e01</span>';
+    if (DATA.sheets.length === 0) {
+        container.innerHTML = '<span style="color: #999; font-style: italic;">\u0e44\u0e21\u0e48\u0e21\u0e35\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25 Sheet</span>';
     }
 
     container.querySelectorAll('.sheet-checkbox').forEach(function(checkbox) {

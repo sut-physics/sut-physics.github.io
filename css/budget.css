@@ -181,6 +181,33 @@
     box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
 }
 
+/* Delete Button in Edit Mode */
+.budget-delete-cell {
+    text-align: center;
+    width: 40px;
+}
+
+.budget-delete-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: var(--danger);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.budget-delete-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
 /* Add Item Button */
 .add-budget-item-btn {
     display: inline-flex;

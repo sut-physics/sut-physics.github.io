@@ -210,6 +210,20 @@ function renderBudgetTable(category) {
     var tbody = document.getElementById('budgetTableBody');
     if (!tbody) return;
 
+    // Update thead to show/hide delete column
+    var thead = tbody.closest('table').querySelector('thead tr');
+    if (thead) {
+        var existingDeleteTh = thead.querySelector('.budget-delete-th');
+        if (budgetEditMode && !existingDeleteTh) {
+            var th = document.createElement('th');
+            th.className = 'budget-delete-th';
+            th.style.width = '40px';
+            thead.appendChild(th);
+        } else if (!budgetEditMode && existingDeleteTh) {
+            existingDeleteTh.remove();
+        }
+    }
+
     recalcBudgetTotals(category);
 
     var html = '';
@@ -226,6 +240,7 @@ function renderBudgetTable(category) {
                 '<td class="number"><input type="number" class="budget-inline-input" value="' + (Number(item.budget) || 0) + '" data-item-idx="' + idx + '" data-field="budget" min="0"></td>' +
                 '<td class="number"><input type="number" class="budget-inline-input" value="' + (Number(item.used) || 0) + '" data-item-idx="' + idx + '" data-field="used" min="0"></td>' +
                 '<td class="number">' + formatNumber(item.remaining) + '</td>' +
+                '<td class="budget-delete-cell"><button class="budget-delete-btn" onclick="deleteBudgetItem(' + idx + ')" title="ลบรายการ">&times;</button></td>' +
                 '</tr>';
         } else {
             html += '<tr>' +
@@ -247,6 +262,7 @@ function renderBudgetTable(category) {
         '<td class="number">' + formatNumber(category.totalBudget) + '</td>' +
         '<td class="number">' + formatNumber(category.totalUsed) + '</td>' +
         '<td class="number">' + formatNumber(category.totalRemaining) + '</td>' +
+        (budgetEditMode ? '<td></td>' : '') +
         '</tr>';
 
     tbody.innerHTML = html;
@@ -386,6 +402,19 @@ function attachBudgetEditListeners() {
             }
         });
     });
+}
+
+function deleteBudgetItem(itemIdx) {
+    var sheet = DATA.sheets[currentSheet];
+    var category = sheet.budget[currentBudgetTypeIdx].categories[currentBudgetCatIdx];
+    var item = category.items[itemIdx];
+    var itemName = item.name || 'รายการที่ ' + (itemIdx + 1);
+
+    if (!confirm('ลบรายการ "' + itemName + '" ?')) return;
+
+    category.items.splice(itemIdx, 1);
+    recalcBudgetTotals(category);
+    renderBudgetPage();
 }
 
 // ============================================================

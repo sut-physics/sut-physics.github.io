@@ -16,7 +16,8 @@ function setupEventListeners() {
         });
     });
 
-    document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+    var fileInput = document.getElementById('fileInput');
+    if (fileInput) fileInput.addEventListener('change', handleFileUpload);
 }
 
 function switchPage(page) {
@@ -24,11 +25,18 @@ function switchPage(page) {
     document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
     document.querySelector('.nav-tab[data-page="' + page + '"]').classList.add('active');
 
+    // Hide all pages
+    document.getElementById('dashboardPage').classList.add('hidden');
+    document.getElementById('budgetPage').classList.add('hidden');
+    document.getElementById('comparisonPage').classList.add('hidden');
+
+    // Show selected page
     if (page === 'dashboard') {
         document.getElementById('dashboardPage').classList.remove('hidden');
-        document.getElementById('comparisonPage').classList.add('hidden');
-    } else {
-        document.getElementById('dashboardPage').classList.add('hidden');
+    } else if (page === 'budget') {
+        document.getElementById('budgetPage').classList.remove('hidden');
+        renderBudgetPage();
+    } else if (page === 'comparison') {
         document.getElementById('comparisonPage').classList.remove('hidden');
         renderComparison();
     }

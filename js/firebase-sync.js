@@ -32,6 +32,8 @@ function initializeFirebase() {
         renderSheetList();
         if (currentPage === 'dashboard') {
             renderDashboard();
+        } else if (currentPage === 'budget') {
+            renderBudgetPage();
         } else {
             renderComparison();
         }

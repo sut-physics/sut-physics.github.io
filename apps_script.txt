@@ -1,0 +1,200 @@
+// เปลี่ยน URL เป็นของโปรเจกต์คุณ
+var FIREBASE_URL = "https://coe-dashboard-sheet-default-rtdb.asia-southeast1.firebasedatabase.app/";
+
+function syncSheetsToFirebase() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheets = ss.getSheets();
+  var allData = { "sheets": [] };
+
+  sheets.forEach(function(sheet) {
+    // 1. ดึงข้อมูลดิบทั้งหมดเก็บใน rawData (เหมือน Python sheet_data)
+    var range = sheet.getDataRange();
+    var values = range.getValues();
+    var sheetData = {};
+    for (var r = 0; r < values.length; r++) {
+      for (var c = 0; c < values[r].length; c++) {
+        var cellRef = String.fromCharCode(65 + c) + (r + 1);
+        sheetData[cellRef] = values[r][c];
+      }
+    }
+
+    // 2. Extract Project Info (ตำแหน่ง B2, E6, G8... เหมือน Python เป๊ะ)
+    var info = {
+      'projectName': sheetData['B2'] || '',
+      'projectNameEng': sheetData['B3'] || '',
+      'leader': sheetData['B4'] || '',
+      'duration': sheetData['B6'] || '',
+      'fiscalYear': sheetData['B7'] || '',
+      'budget': sheetData['B8'] || '',
+      'usedBudget': sheetData['E8'] || '',
+      'remainingBudget': sheetData['G8'] || '',
+      'projectCode': sheetData['B9'] || '',
+      'startDate': formatThaiDate(sheetData['E6']),
+      'endDate': formatThaiDate(sheetData['G6']),
+      'extendDate': sheetData['I6'] || ''
+    };
+
+    // 3. Extract Outputs (ทั้ง 9 หมวด และดึงรายชื่อจาก H-Q เหมือน Python เป๊ะ)
+    var outputs = getOutputs(sheetData);
+
+    // 4. Extract Budget Details (row 62-80)
+    var budget = getBudgetData(sheetData);
+
+    // 5. จัดรูปเล่มข้อมูล (เหมือน data.json)
+    allData.sheets.push({
+      'name': sheet.getName(),
+      'info': info,
+      'outputs': outputs,
+      'budget': budget,
+      'rawData': sheetData
+    });
+  });
+
+  // 6. ส่งขึ้น Firebase ทับตำแหน่งเดิมทั้งหมด
+  var options = {
+    "method": "put",
+    "contentType": "application/json",
+    "payload": JSON.stringify(allData)
+  };
+  UrlFetchApp.fetch(FIREBASE_URL + ".json", options);
+  console.log("Sync สำเร็จ! (budget data preserved)");
+}
+
+function getOutputs(sheetData) {
+  var categories = [
+    { name: 'กำลังคนหรือหน่วยงาน', rows: [13,14,15,16,17,18,19], subNames: ['ระดับปริญญาตรี (ร่วมวิจัย)','ระดับปริญญาโท (ร่วมวิจัย)','ระดับปริญญาเอก (ร่วมวิจัย)','นักวิจัยหน่วยงานรัฐ (ร่วมวิจัย)','เด็กและเยาวชน (ร่วมอบรม)','นิสิต/นักศึกษา ป.ตรี (ร่วมอบรม)','บุคลากรภาครัฐ (ร่วมอบรม)'] },
+    { name: 'ต้นฉบับบทความวิจัย', rows: [22,23,24,25,26,27], subNames: ['TIER1','Q1','Q2','Q3','ระดับชาติ','Proceeding'] },
+    { name: 'หนังสือ', rows: [30], subNames: ['หนังสือ'] },
+    { name: 'ต้นแบบผลิตภัณฑ์/เทคโนโลยี', rows: [33,34,35], subNames: ['ต้นแบบผลิตภัณฑ์','เทคโนโลยี/กระบวนการใหม่','นวัตกรรมทางสังคม'] },
+    { name: 'ทรัพย์สินทางปัญญา', rows: [38], subNames: ['อนุสิทธิบัตร'] },
+    { name: 'เครื่องมือและโครงสร้างพื้นฐาน', rows: [41], subNames: ['เครื่องมือ ววน.'] },
+    { name: 'ฐานข้อมูล/ระบบและกลไก', rows: [44], subNames: ['ฐานข้อมูล'] },
+    { name: 'เครือข่าย', rows: [47,48], subNames: ['ระดับประเทศ','ระดับนานาชาติ'] },
+    { name: 'การลงทุนวิจัยและนวัตกรรม', rows: [51,52], subNames: ['กองทุนในประเทศ','กองทุนต่างประเทศ'] }
+  ];
+
+  return categories.map(function(cat) {
+    var items = cat.rows.map(function(row, i) {
+      var names = [];
+      ['H','I','J','K','L','M','N','O','P','Q'].forEach(function(col) {
+        if (sheetData[col + row]) names.push(sheetData[col + row]);
+      });
+      return {
+        'name': cat.subNames[i],
+        'target': Number(sheetData['B' + row]) || 0,
+        'completed': Number(sheetData['D' + row]) || 0,
+        'names': names
+      };
+    });
+    return { 'name': cat.name, 'items': items };
+  });
+}
+
+function getBudgetData(sheetData) {
+  // Cell mapping สำหรับงบประมาณ (row 62-80)
+  // แต่ละ category: nameCol=ชื่อรายการ, budgetCol=งบประมาณ, usedCol=ใช้ไป, remainingCol=คงเหลือ
+  var budgetTypes = [
+    {
+      type: 'งบดำเนินงาน',
+      categories: [
+        { name: 'ค่าใช้สอย', nameCol: 'A', budgetCol: 'B', usedCol: 'C', remainingCol: 'D' },
+        { name: 'ค่าวัสดุ', nameCol: 'F', budgetCol: 'G', usedCol: 'H', remainingCol: 'I' },
+        { name: 'ค่าจ้าง', nameCol: 'K', budgetCol: 'L', usedCol: 'M', remainingCol: 'N' },
+        { name: 'ค่าเดินทางไปต่างประเทศ', nameCol: 'P', budgetCol: 'Q', usedCol: 'R', remainingCol: 'S' }
+      ]
+    },
+    {
+      type: 'งบลงทุน',
+      categories: [
+        { name: 'ครุภัณฑ์', nameCol: 'U', budgetCol: 'V', usedCol: 'W', remainingCol: 'X' }
+      ]
+    }
+  ];
+
+  return budgetTypes.map(function(bt) {
+    var cats = bt.categories.map(function(cat) {
+      var items = [];
+      for (var row = 65; row <= 80; row++) {
+        items.push({
+          name: sheetData[cat.nameCol + row] ? String(sheetData[cat.nameCol + row]) : '',
+          budget: Number(sheetData[cat.budgetCol + row]) || 0,
+          used: Number(sheetData[cat.usedCol + row]) || 0,
+          remaining: Number(sheetData[cat.remainingCol + row]) || 0
+        });
+      }
+
+      // ดึง totals จาก row 64
+      var totalBudget = Number(sheetData[cat.budgetCol + '64']) || 0;
+      var totalUsed = Number(sheetData[cat.usedCol + '64']) || 0;
+      var totalRemaining = Number(sheetData[cat.remainingCol + '64']) || 0;
+
+      return {
+        name: cat.name,
+        totalBudget: totalBudget,
+        totalUsed: totalUsed,
+        totalRemaining: totalRemaining,
+        items: items
+      };
+    });
+
+    return { type: bt.type, categories: cats };
+  });
+}
+
+function formatThaiDate(val) {
+  if (!val || val === "") return "-";
+  if (val instanceof Date) {
+    var d = val.getDate();
+    var m = val.getMonth() + 1;
+    var y = val.getFullYear();
+    return (d < 10 ? '0' + d : d) + '/' + (m < 10 ? '0' + m : m) + '/' + y;
+  }
+  return val.toString();
+}
+
+// รับ POST request จาก Dashboard แล้วเขียนลง Google Sheets
+function doPost(e) {
+  try {
+    var data = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(data.sheetName);
+
+    if (!sheet) {
+      return ContentService.createTextOutput(JSON.stringify({
+        success: false, error: 'Sheet "' + data.sheetName + '" not found'
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // รองรับทั้งแบบ single cell และ multiple cells
+    var updates = data.updates || [{ cell: data.cell, value: data.value }];
+
+    updates.forEach(function(u) {
+      var range = sheet.getRange(u.cell);
+      // ถ้าเป็นตัวเลข ให้แปลงเป็น Number
+      var val = u.value;
+      if (val !== '' && !isNaN(val)) {
+        val = Number(val);
+      }
+      range.setValue(val);
+    });
+
+    // Sync กลับไป Firebase ด้วย (optional - ถ้าต้องการให้ข้อมูลตรงกัน)
+    // syncSheetsToFirebase();
+
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true, updated: updates.length
+    })).setMimeType(ContentService.MimeType.JSON);
+
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false, error: err.message
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// รองรับ CORS preflight request
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({
+    status: 'ok', message: 'Dashboard API is ready'
+  })).setMimeType(ContentService.MimeType.JSON);
+}

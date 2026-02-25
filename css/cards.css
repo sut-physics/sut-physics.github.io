@@ -11,6 +11,50 @@
     color: white;
     padding: 15px 20px;
     font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-btn-container {
+    display: flex;
+    gap: 6px;
+}
+
+.edit-toggle-btn {
+    padding: 5px 14px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.edit-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.edit-toggle-btn.save-btn {
+    background: var(--success, #2ecc71);
+    border-color: var(--success, #2ecc71);
+}
+
+.edit-toggle-btn.save-btn:hover {
+    background: #27ae60;
+    border-color: #27ae60;
+}
+
+.edit-toggle-btn.cancel-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.edit-toggle-btn.cancel-btn:hover {
+    background: rgba(231, 76, 60, 0.8);
+    border-color: rgba(231, 76, 60, 0.8);
 }
 
 .card-body {

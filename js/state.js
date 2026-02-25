@@ -17,6 +17,7 @@ var DATA = {
 // UI state
 var currentSheet = 0;
 var currentPage = 'dashboard';
+var editMode = { info: false, output: false };
 var currentOutputType = 'hr';
 var comparisonChart = null;
 var selectedSheetsForComparison = [];

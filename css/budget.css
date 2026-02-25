@@ -1,0 +1,319 @@
+/* ============================================================
+   Budget Details Page Styles
+   ============================================================ */
+
+/* Summary Cards */
+.budget-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.budget-summary-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.budget-summary-card.total {
+    border-left: 4px solid var(--secondary);
+}
+
+.budget-summary-card.used {
+    border-left: 4px solid var(--danger);
+}
+
+.budget-summary-card.remaining {
+    border-left: 4px solid var(--success);
+}
+
+.budget-summary-card .budget-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.budget-summary-card .budget-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+/* Budget Type Tabs (งบดำเนินงาน / งบลงทุน) */
+.budget-type-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.budget-type-tab {
+    padding: 8px 20px;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg-card);
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    transition: all 0.2s;
+}
+
+.budget-type-tab:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.budget-type-tab.active {
+    background: var(--secondary);
+    color: white;
+    border-color: var(--secondary);
+}
+
+/* Subcategory Tabs */
+.budget-subcat-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.budget-subcat-tab {
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg-card);
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    transition: all 0.2s;
+}
+
+.budget-subcat-tab:hover {
+    border-color: var(--primary-light);
+    color: var(--primary-light);
+}
+
+.budget-subcat-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Budget Table */
+.budget-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.budget-table th {
+    background: var(--primary);
+    color: white;
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.budget-table th.number {
+    text-align: right;
+}
+
+.budget-table td {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+}
+
+.budget-table td.number {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.budget-table tr:hover {
+    background: var(--bg-light);
+}
+
+.budget-table .total-row {
+    background: #f0f7ff;
+    font-weight: 700;
+    border-top: 2px solid var(--primary);
+}
+
+.budget-table .total-row:hover {
+    background: #e4f0ff;
+}
+
+.budget-table .empty-row td {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Inline inputs in edit mode */
+.budget-inline-input {
+    width: 120px;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.budget-inline-input:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+.budget-name-input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.budget-name-input:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+/* Add Item Button */
+.add-budget-item-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    margin-top: 12px;
+    background: var(--bg-light);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--secondary);
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.add-budget-item-btn:hover {
+    border-color: var(--secondary);
+    background: rgba(74, 144, 217, 0.1);
+}
+
+/* Add Item Modal */
+.budget-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.budget-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    min-width: 400px;
+    max-width: 500px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.budget-modal h3 {
+    margin: 0 0 16px 0;
+    color: var(--primary);
+}
+
+.budget-modal-field {
+    margin-bottom: 14px;
+}
+
+.budget-modal-field label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.budget-modal-field select,
+.budget-modal-field input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.budget-modal-field select:focus,
+.budget-modal-field input:focus {
+    outline: none;
+    border-color: var(--secondary);
+}
+
+.budget-modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.budget-modal-buttons button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.budget-modal-buttons .btn-primary {
+    background: var(--secondary);
+    color: white;
+}
+
+.budget-modal-buttons .btn-primary:hover {
+    background: var(--primary-light);
+}
+
+.budget-modal-buttons .btn-cancel {
+    background: #e9ecef;
+    color: var(--text-dark);
+}
+
+.budget-modal-buttons .btn-cancel:hover {
+    background: #dee2e6;
+}
+
+/* Edit button area */
+.budget-btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .budget-summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .budget-type-tabs,
+    .budget-subcat-tabs {
+        flex-wrap: wrap;
+    }
+
+    .budget-inline-input {
+        width: 80px;
+    }
+
+    .budget-modal {
+        min-width: auto;
+        margin: 0 16px;
+    }
+}

@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/cards.css">
     <link rel="stylesheet" href="css/tables.css">
+    <link rel="stylesheet" href="css/budget.css">
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/comparison.css">
     <link rel="stylesheet" href="css/accordion.css">
@@ -47,6 +48,7 @@
 
     <nav class="nav-tabs">
         <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+        <button class="nav-tab" data-page="budget">รายละเอียดงบประมาณ</button>
         <button class="nav-tab" data-page="comparison">เปรียบเทียบ Sheet</button>
     </nav>
 
@@ -72,7 +74,12 @@
             <div id="dashboardPage">
                 <!-- Project Info -->
                 <div class="card">
-                    <div class="card-header">ข้อมูลโครงการ</div>
+                    <div class="card-header">
+                        <span>ข้อมูลโครงการ</span>
+                        <div class="edit-btn-container" id="editInfoBtnContainer">
+                            <button class="edit-toggle-btn" onclick="toggleEditMode('info')">แก้ไข</button>
+                        </div>
+                    </div>
                     <div class="card-body">
                         <div class="info-grid" id="projectInfo">
                             <!-- Dynamic project info -->
@@ -87,8 +94,14 @@
 
                 <!-- Output Table -->
                 <div class="card">
-                    <div class="card-header">ผลผลิตที่คาดว่าจะได้รับ (Output)</div>
+                    <div class="card-header">
+                        <span>ผลผลิตที่คาดว่าจะได้รับ (Output)</span>
+                        <div class="edit-btn-container" id="editOutputBtnContainer">
+                            <button class="edit-toggle-btn" onclick="toggleEditMode('output')">แก้ไข</button>
+                        </div>
+                    </div>
                     <div class="card-body">
+                        <div id="outputTabs" class="output-tabs"></div>
                         <table class="output-table">
                             <thead>
                                 <tr>
@@ -102,6 +115,45 @@
                             <tbody id="outputTable">
                                 <!-- Dynamic output data -->
                             </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Details Page -->
+            <div id="budgetPage" class="hidden">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">รายละเอียดงบประมาณ</h2>
+
+                <!-- Budget Summary Cards -->
+                <div class="budget-summary-cards" id="budgetSummaryCards"></div>
+
+                <!-- Budget Detail Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>รายละเอียดงบประมาณ</span>
+                        <div class="edit-btn-container" id="editBudgetBtnContainer">
+                            <div class="budget-btn-group">
+                                <button class="edit-toggle-btn" onclick="toggleBudgetEditMode()">แก้ไข</button>
+                                <button class="edit-toggle-btn" onclick="showAddBudgetItemModal()">+ เพิ่มรายการ</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 20px;">
+                        <!-- Budget type tabs -->
+                        <div class="budget-type-tabs" id="budgetTypeTabs"></div>
+                        <!-- Subcategory tabs -->
+                        <div class="budget-subcat-tabs" id="budgetSubcatTabs"></div>
+                        <!-- Budget table -->
+                        <table class="budget-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40%">รายการ</th>
+                                    <th class="number" style="width: 20%">งบประมาณ (บาท)</th>
+                                    <th class="number" style="width: 20%">ใช้จ่าย (บาท)</th>
+                                    <th class="number" style="width: 20%">คงเหลือ (บาท)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="budgetTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -145,6 +197,8 @@
 
     <!-- JavaScript: Layer 3 - Feature modules -->
     <script src="js/accordion.js"></script>
+    <script src="js/sheets-sync.js"></script>
+    <script src="js/budget.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/comparison.js"></script>
     <script src="js/file-upload.js"></script>

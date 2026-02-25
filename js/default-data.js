@@ -78,6 +78,23 @@
             {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
           ]
         }
+      ],
+      "budget": [
+        {
+          "type": "งบดำเนินงาน",
+          "categories": [
+            {"name": "ค่าใช้สอย", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าวัสดุ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าจ้าง", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าเดินทางไปต่างประเทศ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
+          ]
+        },
+        {
+          "type": "งบลงทุน",
+          "categories": [
+            {"name": "ครุภัณฑ์", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
+          ]
+        }
       ]
     },
     {
@@ -154,6 +171,23 @@
           "items": [
             {"name": "กองทุนในประเทศ", "target": 0, "completed": 0, "names": []},
             {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
+          ]
+        }
+      ],
+      "budget": [
+        {
+          "type": "งบดำเนินงาน",
+          "categories": [
+            {"name": "ค่าใช้สอย", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าวัสดุ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าจ้าง", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าเดินทางไปต่างประเทศ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
+          ]
+        },
+        {
+          "type": "งบลงทุน",
+          "categories": [
+            {"name": "ครุภัณฑ์", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
           ]
         }
       ]
@@ -234,6 +268,23 @@
             {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
           ]
         }
+      ],
+      "budget": [
+        {
+          "type": "งบดำเนินงาน",
+          "categories": [
+            {"name": "ค่าใช้สอย", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าวัสดุ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าจ้าง", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าเดินทางไปต่างประเทศ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
+          ]
+        },
+        {
+          "type": "งบลงทุน",
+          "categories": [
+            {"name": "ครุภัณฑ์", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
+          ]
+        }
       ]
     },
     {
@@ -310,6 +361,23 @@
           "items": [
             {"name": "กองทุนในประเทศ", "target": 0, "completed": 0, "names": []},
             {"name": "กองทุนต่างประเทศ", "target": 0, "completed": 0, "names": []}
+          ]
+        }
+      ],
+      "budget": [
+        {
+          "type": "งบดำเนินงาน",
+          "categories": [
+            {"name": "ค่าใช้สอย", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าวัสดุ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าจ้าง", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]},
+            {"name": "ค่าเดินทางไปต่างประเทศ", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
+          ]
+        },
+        {
+          "type": "งบลงทุน",
+          "categories": [
+            {"name": "ครุภัณฑ์", "totalBudget": 0, "totalUsed": 0, "totalRemaining": 0, "items": [{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0},{"name":"","budget":0,"used":0,"remaining":0}]}
           ]
         }
       ]

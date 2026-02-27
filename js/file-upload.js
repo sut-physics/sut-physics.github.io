@@ -212,14 +212,29 @@ function parseWorksheet(worksheet, sheetName) {
     };
 }
 
-function deleteSheet(index) {
+function showDeleteSheetModal() {
     if (DATA.sheets.length <= 1) {
-        alert('\u0e44\u0e21\u0e48\u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e25\u0e1a\u0e44\u0e14\u0e49 \u0e15\u0e49\u0e2d\u0e07\u0e21\u0e35\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e19\u0e49\u0e2d\u0e22 1 Sheet');
+        alert('ไม่สามารถลบได้ ต้องมีอย่างน้อย 1 โครงการ');
         return;
     }
+    var modal = document.getElementById('deleteSheetModal');
+    var list = document.getElementById('deleteSheetList');
+    list.innerHTML = DATA.sheets.map(function(sheet, idx) {
+        return '<div class="delete-modal-item">' +
+            '<span>' + sheet.name + '</span>' +
+            '<button onclick="confirmDeleteSheet(' + idx + ')">ลบ</button>' +
+        '</div>';
+    }).join('');
+    modal.style.display = 'flex';
+}
 
+function hideDeleteSheetModal() {
+    document.getElementById('deleteSheetModal').style.display = 'none';
+}
+
+function confirmDeleteSheet(index) {
     var sheetName = DATA.sheets[index].name;
-    if (!confirm('\u0e15\u0e49\u0e2d\u0e07\u0e01\u0e32\u0e23\u0e25\u0e1a Sheet "' + sheetName + '" \u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e21\u0e48?')) {
+    if (!confirm('ต้องการลบโครงการ "' + sheetName + '" หรือไม่?')) {
         return;
     }
 
@@ -238,5 +253,93 @@ function deleteSheet(index) {
     }
 
     saveAllToFirebase();
-    showStatus('success', '\u0e25\u0e1a Sheet "' + sheetName + '" \u0e41\u0e25\u0e49\u0e27');
+    renderSheetList();
+    renderDashboard();
+    showStatus('success', 'ลบโครงการ "' + sheetName + '" แล้ว');
+
+    if (DATA.sheets.length <= 1) {
+        hideDeleteSheetModal();
+    } else {
+        showDeleteSheetModal();
+    }
+}
+
+function addNewSheet() {
+    var name = prompt('ชื่อย่อโครงการ:');
+    if (!name || !name.trim()) return;
+    name = name.trim();
+
+    var exists = DATA.sheets.some(function(s) { return s.name === name; });
+    if (exists) {
+        alert('มีโครงการชื่อ "' + name + '" อยู่แล้ว');
+        return;
+    }
+
+    var emptyItems16 = [];
+    for (var i = 0; i < 16; i++) {
+        emptyItems16.push({name: "", budget: 0, used: 0, remaining: 0});
+    }
+
+    var newSheet = {
+        name: name,
+        info: {
+            projectName: "", projectNameEng: "", leader: "", duration: "",
+            fiscalYear: "", budget: "0", usedBudget: "0", remainingBudget: "0",
+            projectCode: "", startDate: "", endDate: "", extendDate: ""
+        },
+        outputs: [
+            { name: "กำลังคนหรือหน่วยงาน", items: [
+                {name: "ระดับปริญญาตรี (ร่วมวิจัย)", target: 0, completed: 0, names: []},
+                {name: "ระดับปริญญาโท (ร่วมวิจัย)", target: 0, completed: 0, names: []},
+                {name: "ระดับปริญญาเอก (ร่วมวิจัย)", target: 0, completed: 0, names: []},
+                {name: "นักวิจัยหน่วยงานรัฐ (ร่วมวิจัย)", target: 0, completed: 0, names: []},
+                {name: "เด็กและเยาวชน (ร่วมอบรม)", target: 0, completed: 0, names: []},
+                {name: "นิสิต/นักศึกษา ป.ตรี (ร่วมอบรม)", target: 0, completed: 0, names: []},
+                {name: "บุคลากรภาครัฐ (ร่วมอบรม)", target: 0, completed: 0, names: []}
+            ]},
+            { name: "ต้นฉบับบทความวิจัย", items: [
+                {name: "TIER1", target: 0, completed: 0, names: []},
+                {name: "Q1", target: 0, completed: 0, names: []},
+                {name: "Q2", target: 0, completed: 0, names: []},
+                {name: "Q3", target: 0, completed: 0, names: []},
+                {name: "ระดับชาติ", target: 0, completed: 0, names: []},
+                {name: "Proceeding", target: 0, completed: 0, names: []}
+            ]},
+            { name: "หนังสือ", items: [{name: "หนังสือ", target: 0, completed: 0, names: []}] },
+            { name: "ต้นแบบผลิตภัณฑ์/เทคโนโลยี", items: [
+                {name: "ต้นแบบผลิตภัณฑ์", target: 0, completed: 0, names: []},
+                {name: "เทคโนโลยี/กระบวนการใหม่", target: 0, completed: 0, names: []},
+                {name: "นวัตกรรมทางสังคม", target: 0, completed: 0, names: []}
+            ]},
+            { name: "ทรัพย์สินทางปัญญา", items: [{name: "อนุสิทธิบัตร", target: 0, completed: 0, names: []}] },
+            { name: "เครื่องมือและโครงสร้างพื้นฐาน", items: [{name: "เครื่องมือ ววน.", target: 0, completed: 0, names: []}] },
+            { name: "ฐานข้อมูล/ระบบและกลไก", items: [{name: "ฐานข้อมูล", target: 0, completed: 0, names: []}] },
+            { name: "เครือข่าย", items: [
+                {name: "ระดับประเทศ", target: 0, completed: 0, names: []},
+                {name: "ระดับนานาชาติ", target: 0, completed: 0, names: []}
+            ]},
+            { name: "การลงทุนวิจัยและนวัตกรรม", items: [
+                {name: "กองทุนในประเทศ", target: 0, completed: 0, names: []},
+                {name: "กองทุนต่างประเทศ", target: 0, completed: 0, names: []}
+            ]}
+        ],
+        budget: [
+            { type: "งบดำเนินงาน", categories: [
+                {name: "ค่าใช้สอย", totalBudget: 0, totalUsed: 0, totalRemaining: 0, items: emptyItems16.map(function(i) { return {name:"",budget:0,used:0,remaining:0}; })},
+                {name: "ค่าวัสดุ", totalBudget: 0, totalUsed: 0, totalRemaining: 0, items: emptyItems16.map(function(i) { return {name:"",budget:0,used:0,remaining:0}; })},
+                {name: "ค่าจ้าง", totalBudget: 0, totalUsed: 0, totalRemaining: 0, items: emptyItems16.map(function(i) { return {name:"",budget:0,used:0,remaining:0}; })},
+                {name: "ค่าเดินทางไปต่างประเทศ", totalBudget: 0, totalUsed: 0, totalRemaining: 0, items: emptyItems16.map(function(i) { return {name:"",budget:0,used:0,remaining:0}; })}
+            ]},
+            { type: "งบลงทุน", categories: [
+                {name: "ครุภัณฑ์", totalBudget: 0, totalUsed: 0, totalRemaining: 0, items: emptyItems16.map(function(i) { return {name:"",budget:0,used:0,remaining:0}; })}
+            ]}
+        ]
+    };
+
+    DATA.sheets.push(newSheet);
+    currentSheet = DATA.sheets.length - 1;
+    saveAllToFirebase();
+    renderSheetList();
+    renderDashboard();
+    showStatus('success', 'เพิ่มโครงการ "' + name + '" แล้ว');
 }

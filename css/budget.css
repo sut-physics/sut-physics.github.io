@@ -2,6 +2,49 @@
    Budget Details Page Styles
    ============================================================ */
 
+/* Page Header */
+.budget-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.budget-page-header .edit-toggle-btn {
+    background: var(--secondary);
+    border: 1px solid var(--secondary);
+    color: white;
+    padding: 7px 18px;
+    font-size: 0.85rem;
+}
+
+.budget-page-header .edit-toggle-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-light);
+}
+
+.budget-page-header .edit-toggle-btn.save-btn {
+    background: var(--success, #2ecc71);
+    border-color: var(--success, #2ecc71);
+}
+
+.budget-page-header .edit-toggle-btn.save-btn:hover {
+    background: #27ae60;
+    border-color: #27ae60;
+}
+
+.budget-page-header .edit-toggle-btn.cancel-btn {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: var(--text-dark);
+}
+
+.budget-page-header .edit-toggle-btn.cancel-btn:hover {
+    background: rgba(231, 76, 60, 0.8);
+    border-color: rgba(231, 76, 60, 0.8);
+    color: white;
+}
+
 /* Summary Cards */
 .budget-summary-cards {
     display: grid;
@@ -42,63 +85,131 @@
     margin-top: 5px;
 }
 
-/* Budget Type Tabs (งบดำเนินงาน / งบลงทุน) */
-.budget-type-tabs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-}
-
-.budget-type-tab {
-    padding: 8px 20px;
-    border: 2px solid var(--border);
-    border-radius: 20px;
+/* Budget Type Section */
+.budget-type-section {
     background: var(--bg-card);
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--text-dark);
-    transition: all 0.2s;
-}
-
-.budget-type-tab:hover {
-    border-color: var(--secondary);
-    color: var(--secondary);
-}
-
-.budget-type-tab.active {
-    background: var(--secondary);
-    color: white;
-    border-color: var(--secondary);
-}
-
-/* Subcategory Tabs */
-.budget-subcat-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    border-radius: 10px;
     margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow: hidden;
 }
 
-.budget-subcat-tab {
-    padding: 6px 16px;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    background: var(--bg-card);
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    transition: all 0.2s;
-}
-
-.budget-subcat-tab:hover {
-    border-color: var(--primary-light);
-    color: var(--primary-light);
-}
-
-.budget-subcat-tab.active {
+.budget-type-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
     background: var(--primary);
+    color: rgb(255, 255, 255);
+}
+
+.budget-type-title {
+    font-size: 1rem;
+    font-weight: 700;
+    flex: 1;
+}
+
+/* Budget Category Section (collapsible) */
+.budget-cat-section {
+    border-bottom: 1px solid var(--border);
+}
+
+.budget-cat-section:last-of-type {
+    border-bottom: none;
+}
+
+.budget-cat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #b8d0ee;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.budget-cat-header:hover {
+    background: #e4eef8;
+}
+
+.budget-cat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.budget-cat-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.budget-cat-arrow {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+}
+
+.budget-cat-section.open .budget-cat-arrow {
+    transform: rotate(180deg);
+}
+
+.budget-cat-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.budget-cat-subtotal {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.budget-cat-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+
+.budget-cat-section.open .budget-cat-content {
+    max-height: 3000px;
+}
+
+/* Section Delete Button */
+.budget-section-delete-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
     color: white;
-    border-color: var(--primary);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.budget-section-delete-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.budget-cat-header .budget-section-delete-btn {
+    background: #fee2e2;
+    color: var(--danger);
+}
+
+.budget-cat-header .budget-section-delete-btn:hover {
+    background: var(--danger);
+    color: white;
 }
 
 /* Budget Table */
@@ -108,11 +219,12 @@
 }
 
 .budget-table th {
-    background: var(--primary);
-    color: white;
-    padding: 12px 15px;
+    background: #e8eef5;
+    color: var(--text-dark);
+    padding: 10px 15px;
     text-align: left;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .budget-table th.number {
@@ -120,9 +232,9 @@
 }
 
 .budget-table td {
-    padding: 10px 15px;
+    padding: 8px 15px;
     border-bottom: 1px solid var(--border);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .budget-table td.number {
@@ -138,7 +250,10 @@
 .budget-table .total-row {
     background: #f0f7ff;
     font-weight: 700;
-    border-top: 2px solid var(--primary);
+}
+
+.budget-table .total-row td {
+    border-bottom: 2px solid var(--primary);
 }
 
 .budget-table .total-row:hover {
@@ -181,20 +296,20 @@
     box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
 }
 
-/* Delete Button in Edit Mode */
+/* Delete Button in Edit Mode (item level) */
 .budget-delete-cell {
     text-align: center;
     width: 40px;
 }
 
 .budget-delete-btn {
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border: none;
     border-radius: 50%;
     background: #fee2e2;
     color: var(--danger);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     line-height: 1;
     cursor: pointer;
     transition: all 0.2s;
@@ -208,114 +323,60 @@
     color: white;
 }
 
-/* Add Item Button */
-.add-budget-item-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    margin-top: 12px;
-    background: var(--bg-light);
-    border: 1px dashed var(--border);
-    border-radius: 6px;
+/* Add Item row inside table */
+.budget-add-row td {
+    padding: 6px 15px;
+    border-bottom: none;
+}
+
+.budget-add-item-btn {
+    display: inline-block;
+    padding: 5px 14px;
+    background: transparent;
+    border: 1.5px dashed #e67e22;
+    border-radius: 5px;
     cursor: pointer;
-    color: var(--secondary);
-    font-size: 0.85rem;
+    color: #e67e22;
+    font-size: 0.82rem;
+    font-weight: 600;
     transition: all 0.2s;
 }
 
-.add-budget-item-btn:hover {
-    border-color: var(--secondary);
-    background: rgba(74, 144, 217, 0.1);
+.budget-add-item-btn:hover {
+    background: rgba(230, 126, 34, 0.08);
+    border-color: #d35400;
+    color: #d35400;
 }
 
-/* Add Item Modal */
-.budget-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.budget-modal {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    min-width: 400px;
-    max-width: 500px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-.budget-modal h3 {
-    margin: 0 0 16px 0;
-    color: var(--primary);
-}
-
-.budget-modal-field {
-    margin-bottom: 14px;
-}
-
-.budget-modal-field label {
+.budget-add-section-btn {
     display: block;
-    margin-bottom: 4px;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-weight: 600;
-}
-
-.budget-modal-field select,
-.budget-modal-field input {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-size: 0.9rem;
-    box-sizing: border-box;
-}
-
-.budget-modal-field select:focus,
-.budget-modal-field input:focus {
-    outline: none;
-    border-color: var(--secondary);
-}
-
-.budget-modal-buttons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 20px;
-}
-
-.budget-modal-buttons button {
-    padding: 8px 20px;
-    border: none;
+    width: calc(100% - 40px);
+    margin: 0 20px 12px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1.5px dashed #e67e22;
     border-radius: 6px;
     cursor: pointer;
+    color: #e67e22;
     font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-align: center;
 }
 
-.budget-modal-buttons .btn-primary {
-    background: var(--secondary);
-    color: white;
+.budget-add-section-btn:hover {
+    background: rgba(230, 126, 34, 0.08);
+    border-color: #d35400;
+    color: #d35400;
 }
 
-.budget-modal-buttons .btn-primary:hover {
-    background: var(--primary-light);
-}
-
-.budget-modal-buttons .btn-cancel {
-    background: #e9ecef;
-    color: var(--text-dark);
-}
-
-.budget-modal-buttons .btn-cancel:hover {
-    background: #dee2e6;
+.budget-add-type-btn {
+    width: 100%;
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 /* Edit button area */
@@ -330,17 +391,23 @@
         grid-template-columns: 1fr;
     }
 
-    .budget-type-tabs,
-    .budget-subcat-tabs {
-        flex-wrap: wrap;
-    }
-
     .budget-inline-input {
         width: 80px;
     }
 
-    .budget-modal {
-        min-width: auto;
-        margin: 0 16px;
+    .budget-cat-header {
+        flex-wrap: wrap;
+    }
+
+    .budget-cat-subtotal {
+        text-align: left;
+        width: 100%;
+        margin-top: 4px;
+    }
+
+    .budget-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
 }

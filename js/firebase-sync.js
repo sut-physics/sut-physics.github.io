@@ -34,6 +34,8 @@ function initializeFirebase() {
             renderDashboard();
         } else if (currentPage === 'budget') {
             renderBudgetPage();
+        } else if (currentPage === 'workplan') {
+            renderWorkplanPage();
         } else {
             renderComparison();
         }

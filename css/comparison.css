@@ -94,3 +94,84 @@
     font-weight: bold;
     font-size: 12px;
 }
+
+/* Project Info Comparison Sections */
+.comparison-section {
+    margin-bottom: 20px;
+}
+
+.comparison-info-section {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.comparison-info-title {
+    color: var(--primary);
+    font-size: 1rem;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary);
+}
+
+.comparison-info-table-wrap {
+    overflow-x: auto;
+}
+
+.comparison-info-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.comparison-info-table th {
+    background: var(--bg-light);
+    padding: 10px 14px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--primary);
+    border-bottom: 2px solid #e0e0e0;
+    white-space: nowrap;
+}
+
+.comparison-info-table th:first-child {
+    text-align: left;
+    min-width: 140px;
+}
+
+.comparison-info-table td {
+    padding: 10px 14px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.comparison-info-table td.field-label {
+    text-align: left;
+    font-weight: 500;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+.comparison-info-table td.number {
+    font-family: 'Segoe UI', monospace;
+    font-weight: 500;
+}
+
+.comparison-info-table td.number small {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.comparison-info-table tr.highlight-row {
+    background: #f8f9ff;
+}
+
+.comparison-info-table tr.highlight-row td {
+    border-top: 2px solid #e0e0e0;
+}
+
+.comparison-info-table tbody tr:hover {
+    background: #f5f7ff;
+}

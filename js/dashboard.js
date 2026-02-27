@@ -7,25 +7,24 @@ function renderSheetList() {
         return '<li class="sheet-item ' + (idx === currentSheet ? 'active' : '') + '" data-index="' + idx + '">' +
             '<span class="radio"></span>' +
             '<span>' + sheet.name + '</span>' +
-            '<button class="delete-btn" data-index="' + idx + '" title="\u0e25\u0e1a Sheet \u0e19\u0e35\u0e49">\u00d7</button>' +
         '</li>';
     }).join('');
 
     list.querySelectorAll('.sheet-item').forEach(function(item) {
         item.addEventListener('click', function(e) {
-            if (e.target.classList.contains('delete-btn')) return;
             var idx = parseInt(e.currentTarget.dataset.index);
             currentSheet = idx;
             renderSheetList();
-            renderDashboard();
-        });
-    });
-
-    list.querySelectorAll('.delete-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            var idx = parseInt(e.target.dataset.index);
-            deleteSheet(idx);
+            // Render the currently active page
+            if (currentPage === 'budget') {
+                renderBudgetPage();
+            } else if (currentPage === 'workplan') {
+                renderWorkplanPage();
+            } else if (currentPage === 'comparison') {
+                renderComparison();
+            } else {
+                renderDashboard();
+            }
         });
     });
 }
@@ -102,15 +101,21 @@ function renderDashboard() {
         '<div class="info-box">' +
             editableInfoValue(info.budget, 'budget') +
             '<div class="label">\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13 (\u0e1a\u0e32\u0e17)</div>' +
+            '<div id="budgetMismatchWarning" class="budget-mismatch-warning" style="display:none;"></div>' +
         '</div>' +
         '<div class="info-box">' +
-            editableInfoValue(info.usedBudget, 'usedBudget', 'color: #e74c3c;') +
+            '<div class="value" data-field="usedBudget" style="color: #e74c3c;">' + formatNumber(info.usedBudget) + '</div>' +
             '<div class="label">\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e17\u0e35\u0e48\u0e43\u0e0a\u0e49\u0e44\u0e1b (\u0e1a\u0e32\u0e17)</div>' +
         '</div>' +
         '<div class="info-box">' +
-            editableInfoValue(info.remainingBudget, 'remainingBudget', 'color: #2ecc71;') +
+            '<div class="value" data-field="remainingBudget" style="color: #2ecc71;">' + formatNumber(info.remainingBudget) + '</div>' +
             '<div class="label">\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e04\u0e07\u0e40\u0e2b\u0e25\u0e37\u0e2d (\u0e1a\u0e32\u0e17)</div>' +
         '</div>';
+
+    // Sync budget totals → info (เพื่อให้ usedBudget/remainingBudget ตรงกับรายละเอียดงบ)
+    if (sheet.budget && sheet.budget.length > 0) {
+        syncBudgetToInfo(sheet);
+    }
 
     var summaries = calculateSummary(sheet.outputs);
     document.getElementById('summaryCards').innerHTML = summaries.map(function(s) {
@@ -261,23 +266,19 @@ function startEditInfoCell(el) {
         var newValue = input.value.trim();
         // อัปเดต DATA local เท่านั้น (ยังไม่ save)
         sheet.info[field] = newValue;
-        // คำนวณ remainingBudget อัตโนมัติ
-        if (field === 'budget' || field === 'usedBudget') {
+        // คำนวณ remainingBudget อัตโนมัติเมื่อแก้งบประมาณ
+        if (field === 'budget') {
             var budget = Number(sheet.info.budget) || 0;
             var used = Number(sheet.info.usedBudget) || 0;
             sheet.info.remainingBudget = String(budget - used);
+            var remainEl = document.querySelector('[data-field="remainingBudget"]');
+            if (remainEl) remainEl.textContent = formatNumber(sheet.info.remainingBudget);
+            updateBudgetMismatchWarning(sheet);
         }
         displayValue(newValue);
         // อัปเดต header ถ้าแก้ชื่อโครงการ
         if (field === 'projectName') {
             document.getElementById('projectTitle').textContent = newValue || '\u0e42\u0e04\u0e23\u0e07\u0e01\u0e32\u0e23\u0e27\u0e34\u0e08\u0e31\u0e22';
-        }
-        // อัปเดต remainingBudget UI
-        if (field === 'budget' || field === 'usedBudget') {
-            var remainEl = document.querySelector('[data-field="remainingBudget"]');
-            if (remainEl && !remainEl.querySelector('input')) {
-                remainEl.textContent = formatNumber(sheet.info.remainingBudget);
-            }
         }
     }
 
@@ -440,14 +441,6 @@ function saveEditMode(section) {
     // Save ทั้งหมดไป Firebase
     saveAllToFirebase();
 
-    // Save ไป Google Sheets — sync ทุก field ที่อาจเปลี่ยน
-    var sheet = DATA.sheets[currentSheet];
-    if (section === 'info') {
-        syncAllInfoToSheets(sheet);
-    } else if (section === 'output') {
-        syncAllOutputsToSheets(sheet);
-    }
-
     // ออกจาก edit mode
     editMode[section] = false;
     editSnapshot = null;
@@ -465,42 +458,6 @@ function cancelEditMode(section) {
     editSnapshot = null;
     updateEditButtons(section);
     renderDashboard();
-}
-
-// Sync info fields ทั้งหมดไป Google Sheets
-function syncAllInfoToSheets(sheet) {
-    var updates = [];
-    for (var field in INFO_CELL_MAP) {
-        if (INFO_CELL_MAP.hasOwnProperty(field)) {
-            updates.push({ cell: INFO_CELL_MAP[field], value: sheet.info[field] || '' });
-        }
-    }
-    if (updates.length > 0) {
-        postToGoogleSheets(sheet.name, updates);
-    }
-}
-
-// Sync output fields ทั้งหมดไป Google Sheets
-function syncAllOutputsToSheets(sheet) {
-    sheet.outputs.forEach(function(cat, catIdx) {
-        cat.items.forEach(function(item, itemIdx) {
-            var row = OUTPUT_ROWS[catIdx] && OUTPUT_ROWS[catIdx][itemIdx];
-            if (!row) return;
-
-            var updates = [
-                { cell: 'B' + row, value: item.target || 0 },
-                { cell: 'D' + row, value: item.completed || 0 }
-            ];
-
-            // Names (columns H-Q)
-            var names = item.names || [];
-            NAME_COLUMNS.forEach(function(col, i) {
-                updates.push({ cell: col + row, value: names[i] || '' });
-            });
-
-            postToGoogleSheets(sheet.name, updates);
-        });
-    });
 }
 
 function updateEditButtons(section) {

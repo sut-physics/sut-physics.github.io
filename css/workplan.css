@@ -1,0 +1,231 @@
+/* Workplan Table */
+.workplan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.workplan-table th,
+.workplan-table td {
+    border: 1px solid var(--border);
+    padding: 8px 6px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.workplan-table th {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.workplan-table th.activity-col {
+    min-width: 180px;
+    text-align: left;
+}
+
+.workplan-table th.month-col {
+    width: 36px;
+    min-width: 36px;
+    padding: 8px 2px;
+}
+
+.workplan-table th.percent-col {
+    min-width: 80px;
+}
+
+.workplan-table td.activity-cell {
+    text-align: left;
+}
+
+.workplan-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.workplan-table tbody tr:hover {
+    background: #e9ecef;
+}
+
+/* Checkmark in month cells */
+.workplan-check {
+    color: var(--success, #28a745);
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* Edit mode inputs */
+.workplan-activity-input {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+
+.workplan-number-input {
+    width: 60px;
+    padding: 4px 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.workplan-month-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary);
+}
+
+/* Delete button in edit mode */
+.workplan-delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.workplan-delete-btn:hover {
+    background: #c82333;
+}
+
+/* Modal (reuses budget modal pattern) */
+.workplan-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.workplan-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.workplan-modal h3 {
+    margin: 0 0 16px 0;
+    color: var(--primary);
+}
+
+.workplan-modal-field {
+    margin-bottom: 12px;
+}
+
+.workplan-modal-field label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.workplan-modal-field input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.workplan-modal-months {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.workplan-modal-months label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: normal;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.workplan-modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.workplan-modal-buttons button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.workplan-modal-buttons .confirm-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.workplan-modal-buttons .confirm-btn:hover {
+    opacity: 0.9;
+}
+
+.workplan-modal-buttons .cancel-btn {
+    background: #e9ecef;
+    color: #333;
+}
+
+.workplan-modal-buttons .cancel-btn:hover {
+    background: #dee2e6;
+}
+
+/* Empty state */
+.workplan-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .workplan-table {
+        font-size: 0.75rem;
+    }
+
+    .workplan-table th.month-col {
+        width: 28px;
+        min-width: 28px;
+        padding: 6px 1px;
+    }
+
+    .workplan-table th,
+    .workplan-table td {
+        padding: 6px 3px;
+    }
+
+    .workplan-number-input {
+        width: 45px;
+    }
+
+    .workplan-modal-months {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

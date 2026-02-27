@@ -28,6 +28,8 @@ function switchPage(page) {
     // Hide all pages
     document.getElementById('dashboardPage').classList.add('hidden');
     document.getElementById('budgetPage').classList.add('hidden');
+    document.getElementById('workplanPage').classList.add('hidden');
+    document.getElementById('researchersPage').classList.add('hidden');
     document.getElementById('comparisonPage').classList.add('hidden');
 
     // Show selected page
@@ -36,6 +38,12 @@ function switchPage(page) {
     } else if (page === 'budget') {
         document.getElementById('budgetPage').classList.remove('hidden');
         renderBudgetPage();
+    } else if (page === 'workplan') {
+        document.getElementById('workplanPage').classList.remove('hidden');
+        renderWorkplanPage();
+    } else if (page === 'researchers') {
+        document.getElementById('researchersPage').classList.remove('hidden');
+        renderResearchersPage();
     } else if (page === 'comparison') {
         document.getElementById('comparisonPage').classList.remove('hidden');
         renderComparison();

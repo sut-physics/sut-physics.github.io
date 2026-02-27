@@ -8,6 +8,10 @@
     <!-- External Libraries (CDN) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="fonts/sarabun-regular.js"></script>
+    <script src="fonts/sarabun-bold.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
@@ -19,6 +23,8 @@
     <link rel="stylesheet" href="css/cards.css">
     <link rel="stylesheet" href="css/tables.css">
     <link rel="stylesheet" href="css/budget.css">
+    <link rel="stylesheet" href="css/workplan.css">
+    <link rel="stylesheet" href="css/researchers.css">
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/comparison.css">
     <link rel="stylesheet" href="css/accordion.css">
@@ -49,23 +55,30 @@
     <nav class="nav-tabs">
         <button class="nav-tab active" data-page="dashboard">Dashboard</button>
         <button class="nav-tab" data-page="budget">รายละเอียดงบประมาณ</button>
-        <button class="nav-tab" data-page="comparison">เปรียบเทียบ Sheet</button>
+        <button class="nav-tab" data-page="workplan">แผนการดำเนินงาน</button>
+        <button class="nav-tab" data-page="researchers">คณะผู้วิจัย</button>
+        <button class="nav-tab" data-page="comparison">เปรียบเทียบโครงการ</button>
     </nav>
 
     <div class="container">
         <aside class="sidebar">
-            <div class="sidebar-title">ชื่อ Sheet</div>
+            <div class="sidebar-title">โครงการ</div>
+            <div class="sidebar-actions">
+                <button class="sidebar-action-btn add" onclick="addNewSheet()">+ เพิ่มโครงการ</button>
+                <button class="sidebar-action-btn delete" onclick="showDeleteSheetModal()">- ลบโครงการ</button>
+            </div>
             <ul class="sheet-list" id="sheetList">
                 <!-- Dynamic sheet list -->
             </ul>
             <div class="upload-section">
-                <a href="https://docs.google.com/spreadsheets/d/1D1Upkcj7fB760vdaO0py-JjiAWPi3ASt73H7gvDKrZI/edit?usp=sharing" target="_blank" class="upload-btn" style="text-decoration: none; text-align: center;">
+                <button class="upload-btn" onclick="showExportModal()" style="width: 100%; text-align: center; cursor: pointer; border: none;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
-                    แก้ไข Sheet
-                </a>
+                    Export
+                </button>
             </div>
         </aside>
 
@@ -122,38 +135,85 @@
 
             <!-- Budget Details Page -->
             <div id="budgetPage" class="hidden">
-                <h2 style="margin-bottom: 20px; color: var(--primary);">รายละเอียดงบประมาณ</h2>
+                <div class="budget-page-header">
+                    <h2 style="margin-bottom: 0; color: var(--primary);">รายละเอียดงบประมาณ</h2>
+                    <div class="edit-btn-container" id="editBudgetBtnContainer"></div>
+                </div>
 
                 <!-- Budget Summary Cards -->
                 <div class="budget-summary-cards" id="budgetSummaryCards"></div>
 
-                <!-- Budget Detail Card -->
+                <!-- Budget All Sections Container (rendered by JS) -->
+                <div id="budgetContent"></div>
+            </div>
+
+            <!-- Workplan Page -->
+            <div id="workplanPage" class="hidden">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">แผนการดำเนินงาน</h2>
+
                 <div class="card">
                     <div class="card-header">
-                        <span>รายละเอียดงบประมาณ</span>
-                        <div class="edit-btn-container" id="editBudgetBtnContainer">
+                        <span>แผนการดำเนินงาน</span>
+                        <div class="edit-btn-container" id="editWorkplanBtnContainer">
                             <div class="budget-btn-group">
-                                <button class="edit-toggle-btn" onclick="toggleBudgetEditMode()">แก้ไข</button>
-                                <button class="edit-toggle-btn" onclick="showAddBudgetItemModal()">+ เพิ่มรายการ</button>
+                                <button class="edit-toggle-btn" onclick="toggleWorkplanEditMode()">แก้ไข</button>
+                                <button class="edit-toggle-btn" onclick="showAddWorkplanItemModal()">+ เพิ่มรายการ</button>
                             </div>
                         </div>
                     </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <!-- Budget type tabs -->
-                        <div class="budget-type-tabs" id="budgetTypeTabs"></div>
-                        <!-- Subcategory tabs -->
-                        <div class="budget-subcat-tabs" id="budgetSubcatTabs"></div>
-                        <!-- Budget table -->
-                        <table class="budget-table">
+                    <div class="card-body" style="padding: 20px; overflow-x: auto;">
+                        <table class="workplan-table">
                             <thead>
                                 <tr>
-                                    <th style="width: 40%">รายการ</th>
-                                    <th class="number" style="width: 20%">งบประมาณ (บาท)</th>
-                                    <th class="number" style="width: 20%">ใช้จ่าย (บาท)</th>
-                                    <th class="number" style="width: 20%">คงเหลือ (บาท)</th>
+                                    <th style="width: 50px">ลำดับ</th>
+                                    <th style="width: 60px">ปีที่</th>
+                                    <th class="activity-col">กิจกรรม</th>
+                                    <th class="month-col">1</th>
+                                    <th class="month-col">2</th>
+                                    <th class="month-col">3</th>
+                                    <th class="month-col">4</th>
+                                    <th class="month-col">5</th>
+                                    <th class="month-col">6</th>
+                                    <th class="month-col">7</th>
+                                    <th class="month-col">8</th>
+                                    <th class="month-col">9</th>
+                                    <th class="month-col">10</th>
+                                    <th class="month-col">11</th>
+                                    <th class="month-col">12</th>
+                                    <th class="percent-col">ร้อยละของกิจกรรม</th>
                                 </tr>
                             </thead>
-                            <tbody id="budgetTableBody"></tbody>
+                            <tbody id="workplanTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Researchers Page -->
+            <div id="researchersPage" class="hidden">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">คณะผู้วิจัย</h2>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span>คณะผู้วิจัย</span>
+                        <div class="edit-btn-container" id="editResearchersBtnContainer">
+                            <div class="budget-btn-group">
+                                <button class="edit-toggle-btn" onclick="toggleResearchersEditMode()">แก้ไข</button>
+                                <button class="edit-toggle-btn" onclick="showAddResearcherModal()">+ เพิ่มรายการ</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 20px; overflow-x: auto;">
+                        <table class="researchers-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px">ลำดับ</th>
+                                    <th>ชื่อ - สกุล</th>
+                                    <th style="width: 160px">ตำแหน่งในโครงการ</th>
+                                    <th style="width: 140px">สัดส่วนการมีส่วนร่วม</th>
+                                </tr>
+                            </thead>
+                            <tbody id="researchersTableBody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -161,20 +221,31 @@
 
             <!-- Comparison Page -->
             <div id="comparisonPage" class="hidden">
-                <h2 style="margin-bottom: 20px; color: var(--primary);">เปรียบเทียบผลผลิตระหว่าง Sheet</h2>
+                <h2 style="margin-bottom: 20px; color: var(--primary);">เปรียบเทียบโครงการ</h2>
 
                 <!-- Sheet Selector -->
                 <div class="comparison-selector">
-                    <h3>เลือก Sheet ที่ต้องการเปรียบเทียบ</h3>
-                    <div class="help-text">เลือกได้สูงสุด 4 Sheet (คลิกเพื่อเลือก/ยกเลิก)</div>
+                    <h3>เลือกโครงการที่ต้องการเปรียบเทียบ</h3>
+                    <div class="help-text">เลือกได้สูงสุด 4 โครงการ (คลิกเพื่อเลือก/ยกเลิก)</div>
                     <div class="sheet-checkboxes" id="sheetCheckboxes">
                         <!-- Dynamic checkboxes -->
                     </div>
                 </div>
 
-                <!-- Comparison Chart -->
+                <!-- Project Info Comparison -->
+                <div class="comparison-section" id="comparisonProjectInfo">
+                    <!-- Dynamic project info comparison -->
+                </div>
+
+                <!-- Budget Comparison Chart -->
                 <div class="chart-container" style="margin-bottom: 20px;">
-                    <h3>เปรียบเทียบ % ความคืบหน้า (แต่ละ Sheet)</h3>
+                    <h3>เปรียบเทียบงบประมาณ</h3>
+                    <canvas id="budgetComparisonChart"></canvas>
+                </div>
+
+                <!-- Progress Comparison Chart -->
+                <div class="chart-container" style="margin-bottom: 20px;">
+                    <h3>เปรียบเทียบ % ความคืบหน้าผลผลิต</h3>
                     <canvas id="comparisonChart"></canvas>
                 </div>
 
@@ -192,6 +263,40 @@
     <script src="js/default-data.js"></script>
     <script src="js/state.js"></script>
 
+    <!-- Delete Sheet Modal -->
+    <div class="delete-modal-overlay" id="deleteSheetModal" style="display:none;">
+        <div class="delete-modal">
+            <h3>ลบโครงการ</h3>
+            <p class="delete-modal-desc">เลือกโครงการที่ต้องการลบ</p>
+            <div class="delete-modal-list" id="deleteSheetList"></div>
+            <div class="delete-modal-buttons">
+                <button class="btn-cancel" onclick="hideDeleteSheetModal()">เสร็จสิ้น</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="delete-modal-overlay" id="exportModal" style="display:none;">
+        <div class="delete-modal export-modal">
+            <h3>Export ข้อมูล</h3>
+            <p class="delete-modal-desc">เลือกโครงการที่ต้องการ Export</p>
+            <div class="export-select-actions">
+                <button class="export-select-btn" onclick="exportSelectAll(true)">เลือกทั้งหมด</button>
+                <button class="export-select-btn" onclick="exportSelectAll(false)">ไม่เลือกทั้งหมด</button>
+            </div>
+            <div class="delete-modal-list" id="exportSheetList"></div>
+            <p class="delete-modal-desc" style="margin-top:12px;">รูปแบบไฟล์</p>
+            <div class="export-format-options">
+                <label class="export-format-label"><input type="radio" name="exportFormat" value="excel" checked> Excel (.xlsx)</label>
+                <label class="export-format-label"><input type="radio" name="exportFormat" value="pdf"> PDF</label>
+            </div>
+            <div class="delete-modal-buttons">
+                <button class="btn-cancel" onclick="hideExportModal()">ยกเลิก</button>
+                <button class="btn-export-confirm" onclick="confirmExport()">Download</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript: Layer 2 - Utilities -->
     <script src="js/utils.js"></script>
 
@@ -199,6 +304,8 @@
     <script src="js/accordion.js"></script>
     <script src="js/sheets-sync.js"></script>
     <script src="js/budget.js"></script>
+    <script src="js/workplan.js"></script>
+    <script src="js/researchers.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/comparison.js"></script>
     <script src="js/file-upload.js"></script>

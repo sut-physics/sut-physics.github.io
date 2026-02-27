@@ -84,30 +84,6 @@
     display: none;
 }
 
-.sheet-item .delete-btn {
-    margin-left: auto;
-    width: 20px;
-    height: 20px;
-    border: none;
-    background: transparent;
-    color: #999;
-    cursor: pointer;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: all 0.2s;
-}
-
-.sheet-item:hover .delete-btn {
-    opacity: 1;
-}
-
-.sheet-item .delete-btn:hover {
-    background: var(--danger);
-    color: white;
-}
 
 .upload-status {
     padding: 10px;

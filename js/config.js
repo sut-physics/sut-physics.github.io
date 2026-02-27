@@ -16,6 +16,3 @@ const firebaseConfig = {
 // Maximum sheets in comparison view
 var MAX_COMPARISON_SHEETS = 4;
 
-// Google Apps Script Web App URL (Deploy แล้วเอา URL มาใส่ตรงนี้)
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyf2AEqG9Xp7wuDH4gTw58AcjDRbVx6lb5Ujz29287MSQjEUHfqtTTvbcTV8lavGyxC/exec';
-// Deployment ID = AKfycbwtAVkdlayhFAmOYEA_Nn6hZ_KT4AKWE8bS23zT2f1s4FlQVqsvAVTTWBlQuNUizk7I

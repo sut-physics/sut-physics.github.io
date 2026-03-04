@@ -14,7 +14,8 @@
         "projectCode": "ABC1234",
         "startDate": "1/10/2566",
         "endDate": "30/9/2567",
-        "extendDate": ""
+        "extendDate": "",
+        "extendDates": ["", "", ""]
       },
       "outputs": [
         {
@@ -109,7 +110,8 @@
         "projectCode": "FF67",
         "startDate": "1/10/2566",
         "endDate": "30/9/2567",
-        "extendDate": "30/9/2568"
+        "extendDate": "30/9/2568",
+        "extendDates": ["30/9/2568", "", ""]
       },
       "outputs": [
         {
@@ -204,7 +206,8 @@
         "projectCode": "FF68",
         "startDate": "1/10/2567",
         "endDate": "30/9/2568",
-        "extendDate": "30/9/2569"
+        "extendDate": "30/9/2569",
+        "extendDates": ["30/9/2569", "", ""]
       },
       "outputs": [
         {
@@ -299,7 +302,8 @@
         "projectCode": "B05F640055",
         "startDate": "1/10/2563",
         "endDate": "30/9/2566",
-        "extendDate": ""
+        "extendDate": "",
+        "extendDates": ["", "", ""]
       },
       "outputs": [
         {

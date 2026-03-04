@@ -1,3 +1,65 @@
+/* Sidebar Filters */
+.sidebar-filters {
+    padding: 6px 12px 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+}
+
+.filter-group {
+    margin-bottom: 6px;
+}
+
+.filter-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 2px 8px 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.filter-options {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.15s;
+}
+
+.filter-option:hover {
+    background: var(--bg-light);
+}
+
+.filter-option input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--secondary);
+    margin: 0;
+    cursor: pointer;
+}
+
+.filter-option span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.filter-empty {
+    padding: 6px 8px;
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
 .sheet-list {
     list-style: none;
     max-height: calc(100vh - 350px);

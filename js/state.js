@@ -22,6 +22,10 @@ var currentOutputType = 'hr';
 var comparisonChart = null;
 var selectedSheetsForComparison = [];
 var selectedFiscalYears = [];
+var sidebarFilters = { fiscalYears: [], leaders: [] };
+
+// Current logged-in user
+var currentUser = { username: '', role: '', displayName: '' };
 
 // Firebase database reference (set after Firebase init)
 var database = null;

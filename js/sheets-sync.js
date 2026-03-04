@@ -62,7 +62,9 @@ function syncBudgetToInfo(sheet) {
 
     var totalAllocated = 0, totalUsed = 0;
     sheet.budget.forEach(function(bt) {
+        if (!bt || !bt.categories) return;
         bt.categories.forEach(function(cat) {
+            if (!cat || !cat.items) return;
             cat.items.forEach(function(item) {
                 totalAllocated += Number(item.budget) || 0;
                 totalUsed += Number(item.used) || 0;
@@ -96,7 +98,9 @@ function updateBudgetMismatchWarning(sheet) {
     var totalAllocated = 0;
     if (sheet.budget) {
         sheet.budget.forEach(function(bt) {
+            if (!bt || !bt.categories) return;
             bt.categories.forEach(function(cat) {
+                if (!cat || !cat.items) return;
                 cat.items.forEach(function(item) {
                     totalAllocated += Number(item.budget) || 0;
                 });
@@ -200,6 +204,9 @@ function exportToExcel(indices) {
             ['วันเริ่มต้น', info.startDate || ''],
             ['วันสิ้นสุด', info.endDate || ''],
             ['วันขยายเวลา', info.extendDate || ''],
+            ['ขยายเวลาครั้งที่ 1', (info.extendDates && info.extendDates[0]) || ''],
+            ['ขยายเวลาครั้งที่ 2', (info.extendDates && info.extendDates[1]) || ''],
+            ['ขยายเวลาครั้งที่ 3', (info.extendDates && info.extendDates[2]) || ''],
             ['ปีงบประมาณ', info.fiscalYear || ''],
             ['งบประมาณ', Number(info.budget) || 0],
             ['งบประมาณที่ใช้ไป', Number(info.usedBudget) || 0],
@@ -322,9 +329,8 @@ function exportToPDF(indices) {
             theme: 'grid',
             styles: Object.assign({ fontSize: 9, cellPadding: 2 }, tableFont),
             headStyles: { fillColor: [30, 58, 138], fontStyle: 'bold' },
-            columnStyles: { 0: { cellWidth: 35 }, 1: { cellWidth: 80 } },
-            margin: { left: 14 },
-            tableWidth: 115
+            columnStyles: { 0: { cellWidth: 50 } },
+            margin: { left: 14 }
         });
 
         // Outputs Table (right side)
@@ -332,28 +338,27 @@ function exportToPDF(indices) {
         if (sheet.outputs) {
             sheet.outputs.forEach(function(cat) {
                 cat.items.forEach(function(item) {
-                    var nameList = (item.names || []).filter(function(n) { return n; }).join(', ');
+                    var filteredNames = (item.names || []).filter(function(n) { return n; });
+                    var nameList = filteredNames.map(function(n, i) { return (i + 1) + '. ' + n; }).join('\n');
                     outputBody.push([cat.name, item.name, item.target || 0, item.completed || 0, nameList]);
                 });
             });
         }
         if (outputBody.length > 0) {
             doc.autoTable({
-                startY: 25,
+                startY: doc.lastAutoTable.finalY + 10,
                 head: [['หมวด', 'รายการ', 'เป้าหมาย', 'แล้วเสร็จ', 'รายชื่อ']],
                 body: outputBody,
                 theme: 'grid',
                 styles: Object.assign({ fontSize: 8, cellPadding: 1.5 }, tableFont),
                 headStyles: { fillColor: [30, 58, 138], fontStyle: 'bold' },
                 columnStyles: {
-                    0: { cellWidth: 25 },
-                    1: { cellWidth: 30 },
-                    2: { cellWidth: 15, halign: 'center' },
-                    3: { cellWidth: 15, halign: 'center' },
-                    4: { cellWidth: 50 }
+                    0: { cellWidth: 30 },
+                    1: { cellWidth: 40 },
+                    2: { cellWidth: 20, halign: 'center' },
+                    3: { cellWidth: 20, halign: 'center' }
                 },
-                margin: { left: 145 },
-                tableWidth: 135
+                margin: { left: 14 }
             });
         }
 

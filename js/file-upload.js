@@ -112,7 +112,8 @@ function parseWorksheet(worksheet, sheetName) {
         projectCode: String(getCell('B9') || sheetName),
         startDate: formatDate(getCell('E6')),
         endDate: formatDate(getCell('G6')),
-        extendDate: formatDate(getCell('I6') || '')
+        extendDate: formatDate(getCell('I6') || ''),
+        extendDates: (getCell('I6') ? [formatDate(getCell('I6')), '', ''] : ['', '', ''])
     };
 
     var outputCategories = [
@@ -285,7 +286,8 @@ function addNewSheet() {
         info: {
             projectName: "", projectNameEng: "", leader: "", duration: "",
             fiscalYear: "", budget: "0", usedBudget: "0", remainingBudget: "0",
-            projectCode: "", startDate: "", endDate: "", extendDate: ""
+            projectCode: "", startDate: "", endDate: "", extendDate: "",
+            extendDates: ["", "", ""]
         },
         outputs: [
             { name: "กำลังคนหรือหน่วยงาน", items: [

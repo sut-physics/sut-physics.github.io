@@ -113,6 +113,12 @@ function updateWorkplanEditButtons() {
     var container = document.getElementById('editWorkplanBtnContainer');
     if (!container) return;
 
+    // Leader cannot edit workplan
+    if (currentUser.role === 'leader') {
+        container.innerHTML = '';
+        return;
+    }
+
     if (workplanEditMode) {
         container.innerHTML =
             '<div class="budget-btn-group">' +

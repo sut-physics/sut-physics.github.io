@@ -24,6 +24,12 @@ function initializeFirebase() {
             }
             
             DATA.sheets = Array.isArray(data) ? data : Object.values(data);
+            // ensure extendDates array exists for all sheets
+            DATA.sheets.forEach(function(s) {
+                if (s.info && !s.info.extendDates) {
+                    s.info.extendDates = s.info.extendDate ? [s.info.extendDate, '', ''] : ['', '', ''];
+                }
+            });
         } else {
             DATA.sheets = DEFAULT_DATA.sheets;
             saveAllToFirebase();
@@ -45,6 +51,30 @@ function initializeFirebase() {
         console.error('Firebase sync error:', error);
         showStatus('error', '\u0e44\u0e21\u0e48\u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e40\u0e0a\u0e37\u0e48\u0e2d\u0e21\u0e15\u0e48\u0e2d Firebase \u0e44\u0e14\u0e49');
     });
+}
+
+function initializeUsers() {
+    var usersRef = database.ref('users');
+    return usersRef.once('value').then(function(snapshot) {
+        var data = snapshot.val();
+        if (!data) {
+            usersRef.set(DEFAULT_USERS);
+        }
+    });
+}
+
+function loadUsersFromFirebase() {
+    return database.ref('users').once('value').then(function(snapshot) {
+        var data = snapshot.val();
+        if (!data) return [];
+        // Firebase อาจคืน object แทน array → แปลงให้เป็น array เสมอ
+        if (Array.isArray(data)) return data;
+        return Object.values(data);
+    });
+}
+
+function saveUsersToFirebase(users) {
+    return database.ref('users').set(users);
 }
 
 function saveAllToFirebase() {

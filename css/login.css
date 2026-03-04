@@ -69,3 +69,20 @@
     margin-top: 10px;
     display: none;
 }
+
+/* User Management Modal */
+#userManagementModal input,
+#userManagementModal select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+#userManagementModal input:focus,
+#userManagementModal select:focus {
+    outline: none;
+    border-color: var(--secondary);
+}

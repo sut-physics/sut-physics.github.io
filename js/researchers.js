@@ -105,6 +105,12 @@ function updateResearchersEditButtons() {
     var container = document.getElementById('editResearchersBtnContainer');
     if (!container) return;
 
+    // Leader cannot edit researchers
+    if (currentUser.role === 'leader') {
+        container.innerHTML = '';
+        return;
+    }
+
     if (researchersEditMode) {
         container.innerHTML =
             '<div class="budget-btn-group">' +

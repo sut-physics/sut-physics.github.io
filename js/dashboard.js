@@ -4,6 +4,40 @@ var editSnapshot = null; // เก็บ snapshot ข้อมูลก่อน
 function renderSheetList() {
     var list = document.getElementById('sheetList');
     list.innerHTML = DATA.sheets.map(function(sheet, idx) {
+        // Role-based filter: leader sees only projects where their name is in researchers or info.leader
+        if (currentUser.role === 'leader') {
+            var displayName = (currentUser.displayName || '').trim();
+            var found = false;
+
+            // เช็ค info.leader ก่อน
+            var leaderName = ((sheet.info && sheet.info.leader) || '').trim();
+            if (leaderName && (leaderName.indexOf(displayName) !== -1 || displayName.indexOf(leaderName) !== -1)) {
+                found = true;
+            }
+
+            // เช็ค researchers list
+            if (!found) {
+                var researchers = sheet.researchers || [];
+                for (var r = 0; r < researchers.length; r++) {
+                    var rName = (researchers[r].name || '').trim();
+                    if (rName && (rName.indexOf(displayName) !== -1 || displayName.indexOf(rName) !== -1)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!found) return '';
+        }
+        // Apply sidebar filters
+        if (sidebarFilters.fiscalYears.length > 0) {
+            var fy = String((sheet.info && sheet.info.fiscalYear) || '');
+            if (sidebarFilters.fiscalYears.indexOf(fy) === -1) return '';
+        }
+        if (sidebarFilters.leaders.length > 0) {
+            var ld = String((sheet.info && sheet.info.leader) || '');
+            if (sidebarFilters.leaders.indexOf(ld) === -1) return '';
+        }
         return '<li class="sheet-item ' + (idx === currentSheet ? 'active' : '') + '" data-index="' + idx + '">' +
             '<span class="radio"></span>' +
             '<span>' + sheet.name + '</span>' +
@@ -27,6 +61,53 @@ function renderSheetList() {
             }
         });
     });
+
+    renderSidebarFilterOptions();
+}
+
+function renderSidebarFilterOptions() {
+    var fiscalYears = [];
+    var leaders = [];
+    DATA.sheets.forEach(function(sheet) {
+        var fy = String((sheet.info && sheet.info.fiscalYear) || '');
+        var ld = String((sheet.info && sheet.info.leader) || '');
+        if (fy && fiscalYears.indexOf(fy) === -1) fiscalYears.push(fy);
+        if (ld && leaders.indexOf(ld) === -1) leaders.push(ld);
+    });
+    fiscalYears.sort();
+    leaders.sort();
+
+    renderFilterOptions('fiscalYear', fiscalYears, sidebarFilters.fiscalYears);
+    renderFilterOptions('leader', leaders, sidebarFilters.leaders);
+}
+
+function renderFilterOptions(type, allValues, selectedValues) {
+    var container = document.getElementById(type + 'Options');
+    if (!container) return;
+
+    if (allValues.length === 0) {
+        container.innerHTML = '<div class="filter-empty">ไม่พบข้อมูล</div>';
+        return;
+    }
+
+    container.innerHTML = allValues.map(function(val) {
+        var checked = selectedValues.indexOf(val) !== -1 ? 'checked' : '';
+        return '<label class="filter-option">' +
+            '<input type="checkbox" ' + checked + ' onchange="toggleSidebarFilter(\'' + type + '\', \'' + val.replace(/'/g, "\\'") + '\')">' +
+            '<span>' + val + '</span>' +
+        '</label>';
+    }).join('');
+}
+
+function toggleSidebarFilter(type, value) {
+    var arr = type === 'fiscalYear' ? sidebarFilters.fiscalYears : sidebarFilters.leaders;
+    var idx = arr.indexOf(value);
+    if (idx === -1) {
+        arr.push(value);
+    } else {
+        arr.splice(idx, 1);
+    }
+    renderSheetList();
 }
 
 // สร้าง editable value สำหรับ info box
@@ -86,7 +167,7 @@ function renderDashboard() {
             '<div class="label">\u0e08\u0e1a\u0e42\u0e04\u0e23\u0e07\u0e01\u0e32\u0e23</div>' +
         '</div>' +
         '<div class="info-box">' +
-            editableInfoValue(info.extendDate, 'extendDate') +
+            editableInfoValue(getDisplayExtendDate(info), 'extendDate') +
             '<div class="label">\u0e02\u0e22\u0e32\u0e22\u0e40\u0e27\u0e25\u0e32\u0e16\u0e36\u0e07</div>' +
         '</div>' +
         '<div class="info-box">' +
@@ -128,16 +209,44 @@ function renderDashboard() {
     // Output Tabs
     if (currentOutputTab >= sheet.outputs.length) currentOutputTab = 0;
     var tabsHTML = sheet.outputs.map(function(cat, idx) {
-        return '<button class="output-tab' + (idx === currentOutputTab ? ' active' : '') + '" data-tab="' + idx + '">' + cat.name + '</button>';
+        var tabClass = 'output-tab' + (idx === currentOutputTab ? ' active' : '');
+        if (editMode.output) {
+            return '<div class="output-tab-wrapper' + (idx === currentOutputTab ? ' active' : '') + '">' +
+                '<button class="' + tabClass + '" data-tab="' + idx + '">' + cat.name + '</button>' +
+                '<button class="output-tab-delete" data-tab="' + idx + '" title="ลบหัวข้อ">&times;</button>' +
+            '</div>';
+        }
+        return '<button class="' + tabClass + '" data-tab="' + idx + '">' + cat.name + '</button>';
     }).join('');
+
+    if (editMode.output) {
+        tabsHTML += '<button class="output-tab output-tab-add" title="เพิ่มหัวข้อ">+</button>';
+    }
     document.getElementById('outputTabs').innerHTML = tabsHTML;
 
     // Tab click events
     document.querySelectorAll('.output-tab').forEach(function(tab) {
         tab.addEventListener('click', function() {
+            if (tab.classList.contains('output-tab-add')) return;
             currentOutputTab = parseInt(tab.dataset.tab);
             renderOutputTable();
             updateTabActive();
+        });
+    });
+
+    // Add output category button
+    var addTabBtn = document.querySelector('.output-tab-add');
+    if (addTabBtn) {
+        addTabBtn.addEventListener('click', function() {
+            addOutputCategory();
+        });
+    }
+
+    // Delete output category buttons
+    document.querySelectorAll('.output-tab-delete').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteOutputCategory(parseInt(btn.dataset.tab));
         });
     });
 
@@ -172,19 +281,22 @@ function renderOutputTable() {
             }
             namesHTML += '</div>';
 
-            var targetHTML, completedHTML;
+            var nameHTML, targetHTML, completedHTML;
             if (editMode.output) {
+                nameHTML = '<input type="text" class="output-name-input" value="' + (item.name || '') + '" ' +
+                    'data-cat="' + catIdx + '" data-item="' + itemIdx + '" data-field="name">';
                 targetHTML = '<input type="number" class="inline-input" value="' + (item.target || 0) + '" ' +
                     'data-cat="' + catIdx + '" data-item="' + itemIdx + '" data-field="target" min="0">';
                 completedHTML = '<input type="number" class="inline-input" value="' + (item.completed || 0) + '" ' +
                     'data-cat="' + catIdx + '" data-item="' + itemIdx + '" data-field="completed" min="0">';
             } else {
+                nameHTML = item.name;
                 targetHTML = '<span>' + (item.target || 0) + '</span>';
                 completedHTML = '<span>' + (item.completed || 0) + '</span>';
             }
 
             tableHTML += '<tr>' +
-                '<td>' + item.name + '</td>' +
+                '<td>' + nameHTML + '</td>' +
                 '<td class="number">' + targetHTML + '</td>' +
                 '<td class="number">' + completedHTML + '</td>' +
                 '<td>' +
@@ -194,10 +306,30 @@ function renderOutputTable() {
                     '<small style="color: #666">' + percent.toFixed(0) + '%</small>' +
                 '</td>' +
                 '<td>' + namesHTML + '</td>' +
+                (editMode.output ? '<td class="output-delete-cell"><button class="budget-delete-btn" onclick="deleteOutputItem(' + itemIdx + ')" title="ลบรายการ">&times;</button></td>' : '') +
             '</tr>';
         });
+
+        // ปุ่มเพิ่มรายการ (edit mode)
+        if (editMode.output) {
+            tableHTML += '<tr class="budget-add-row"><td colspan="6"><button class="budget-add-item-btn" onclick="addOutputItem()">+ เพิ่มรายการ</button></td></tr>';
+        }
     }
     document.getElementById('outputTable').innerHTML = tableHTML;
+
+    // อัปเดต thead ให้มีคอลัมน์ลบเมื่ออยู่ใน edit mode
+    var thead = document.getElementById('outputTableHead');
+    if (thead) {
+        thead.innerHTML = '<tr>' +
+            '<th style="width: 30%">รายการ</th>' +
+            '<th style="width: 10%">เป้าหมาย</th>' +
+            '<th style="width: 10%">แล้วเสร็จ</th>' +
+            '<th style="width: 20%">ความคืบหน้า</th>' +
+            '<th style="width: 30%">รายชื่อ</th>' +
+            (editMode.output ? '<th style="width: 40px"></th>' : '') +
+        '</tr>';
+    }
+
     attachEditListeners();
 }
 
@@ -236,12 +368,95 @@ function attachEditListeners() {
             addNewName(btn);
         });
     });
+
+    // Output name inputs — อัปเดตชื่อรายการ output
+    document.querySelectorAll('.output-name-input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            var catIdx = parseInt(input.dataset.cat);
+            var itemIdx = parseInt(input.dataset.item);
+            DATA.sheets[currentSheet].outputs[catIdx].items[itemIdx].name = input.value.trim();
+        });
+    });
+}
+
+// คืนค่าวันที่แสดงผลจาก extendDates (priority: ครั้งที่ 3 → 2 → 1)
+function getDisplayExtendDate(info) {
+    var dates = info.extendDates;
+    if (!dates || !Array.isArray(dates)) return info.extendDate || '';
+    for (var i = 2; i >= 0; i--) {
+        if (dates[i] && dates[i].trim()) return dates[i].trim();
+    }
+    return info.extendDate || '';
+}
+
+// Modal สำหรับแก้ไขวันขยายเวลา 3 ครั้ง
+function showExtendDateModal(el) {
+    var sheet = DATA.sheets[currentSheet];
+    var dates = sheet.info.extendDates || ['', '', ''];
+    // ensure 3 elements
+    while (dates.length < 3) dates.push('');
+
+    var overlay = document.createElement('div');
+    overlay.className = 'delete-modal-overlay';
+    overlay.innerHTML =
+        '<div class="delete-modal extend-date-modal">' +
+            '<h3>ขยายเวลาโครงการ</h3>' +
+            '<p class="delete-modal-desc">กรอกวันที่ขยายเวลาแต่ละครั้ง (เช่น 30/9/2568)</p>' +
+            '<div class="extend-date-fields">' +
+                '<div class="extend-date-field">' +
+                    '<label>ครั้งที่ 1</label>' +
+                    '<input type="text" class="inline-edit-input" id="extendDate1" value="' + (dates[0] || '') + '" placeholder="เช่น 30/9/2568">' +
+                '</div>' +
+                '<div class="extend-date-field">' +
+                    '<label>ครั้งที่ 2</label>' +
+                    '<input type="text" class="inline-edit-input" id="extendDate2" value="' + (dates[1] || '') + '" placeholder="เช่น 30/9/2569">' +
+                '</div>' +
+                '<div class="extend-date-field">' +
+                    '<label>ครั้งที่ 3</label>' +
+                    '<input type="text" class="inline-edit-input" id="extendDate3" value="' + (dates[2] || '') + '" placeholder="เช่น 30/9/2570">' +
+                '</div>' +
+            '</div>' +
+            '<div class="delete-modal-buttons" style="gap:8px;">' +
+                '<button class="btn-cancel" id="extendDateCancel">ยกเลิก</button>' +
+                '<button class="btn-cancel" id="extendDateConfirm" style="background:var(--secondary);color:white;">ยืนยัน</button>' +
+            '</div>' +
+        '</div>';
+
+    document.body.appendChild(overlay);
+
+    document.getElementById('extendDateCancel').addEventListener('click', function() {
+        document.body.removeChild(overlay);
+    });
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) document.body.removeChild(overlay);
+    });
+
+    document.getElementById('extendDateConfirm').addEventListener('click', function() {
+        var newDates = [
+            document.getElementById('extendDate1').value.trim(),
+            document.getElementById('extendDate2').value.trim(),
+            document.getElementById('extendDate3').value.trim()
+        ];
+        sheet.info.extendDates = newDates;
+        sheet.info.extendDate = getDisplayExtendDate(sheet.info);
+        el.textContent = sheet.info.extendDate || '-';
+        document.body.removeChild(overlay);
+    });
+
+    document.getElementById('extendDate1').focus();
 }
 
 function startEditInfoCell(el) {
     if (el.querySelector('input')) return;
 
     var field = el.dataset.field;
+
+    // extendDate → เปิด modal แทน inline edit
+    if (field === 'extendDate') {
+        showExtendDateModal(el);
+        return;
+    }
+
     var sheet = DATA.sheets[currentSheet];
     var rawValue = sheet.info[field] || '';
 
@@ -360,6 +575,60 @@ function addNewName(btn) {
         if (e.key === 'Enter') input.blur();
         if (e.key === 'Escape') renderOutputTable();
     });
+}
+
+function addOutputCategory() {
+    var name = prompt('ชื่อหัวข้อผลผลิตใหม่:');
+    if (!name || !name.trim()) return;
+
+    var sheet = DATA.sheets[currentSheet];
+    sheet.outputs.push({ name: name.trim(), items: [] });
+    currentOutputTab = sheet.outputs.length - 1;
+    renderDashboard();
+}
+
+function deleteOutputCategory(catIdx) {
+    var sheet = DATA.sheets[currentSheet];
+    var cat = sheet.outputs[catIdx];
+    if (!cat) return;
+
+    if (!confirm('ลบหัวข้อ "' + cat.name + '" และรายการทั้งหมด?')) return;
+
+    sheet.outputs.splice(catIdx, 1);
+    if (currentOutputTab >= sheet.outputs.length) {
+        currentOutputTab = Math.max(0, sheet.outputs.length - 1);
+    }
+    renderDashboard();
+}
+
+function addOutputItem() {
+    var sheet = DATA.sheets[currentSheet];
+    var catIdx = currentOutputTab;
+    var cat = sheet.outputs[catIdx];
+    if (!cat) return;
+
+    cat.items.push({ name: '', target: 0, completed: 0, names: [] });
+    renderOutputTable();
+
+    // Focus ช่อง name ของ item ใหม่
+    var nameInputs = document.querySelectorAll('#outputTable .output-name-input');
+    if (nameInputs.length > 0) {
+        nameInputs[nameInputs.length - 1].focus();
+    }
+}
+
+function deleteOutputItem(itemIdx) {
+    var sheet = DATA.sheets[currentSheet];
+    var catIdx = currentOutputTab;
+    var cat = sheet.outputs[catIdx];
+    if (!cat) return;
+
+    var itemName = cat.items[itemIdx].name || 'รายการที่ ' + (itemIdx + 1);
+    if (!confirm('ลบรายการ "' + itemName + '" ?')) return;
+
+    cat.items.splice(itemIdx, 1);
+    renderOutputTable();
+    updateSummaryCards();
 }
 
 function updateProgressBar(input, catIdx, itemIdx) {

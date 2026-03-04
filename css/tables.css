@@ -29,6 +29,58 @@
     border-color: var(--primary);
 }
 
+.output-tab-wrapper {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+
+.output-tab-wrapper .output-tab {
+    padding-right: 28px;
+}
+
+.output-tab-delete {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.15);
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+}
+
+.output-tab-wrapper.active .output-tab-delete {
+    background: rgba(255,255,255,0.3);
+    color: white;
+}
+
+.output-tab-delete:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.output-tab-add {
+    border-style: dashed !important;
+    color: #999 !important;
+    font-size: 1.1rem;
+    padding: 8px 14px !important;
+}
+
+.output-tab-add:hover {
+    border-color: var(--secondary) !important;
+    color: var(--secondary) !important;
+}
+
 .output-table {
     width: 100%;
     border-collapse: collapse;
@@ -150,6 +202,26 @@
 
 .inline-input:hover {
     border-color: var(--secondary);
+}
+
+.output-name-input {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+
+.output-name-input:focus {
+    border-color: var(--secondary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.output-delete-cell {
+    text-align: center;
+    width: 40px;
 }
 
 .editable-name {

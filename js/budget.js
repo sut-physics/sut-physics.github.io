@@ -31,7 +31,9 @@ function getDefaultBudgetStructure() {
 // ลบ empty items ที่ไม่มีข้อมูลออก (ใช้ก่อนบันทึก)
 function cleanEmptyBudgetItems(budget) {
     budget.forEach(function(bt) {
+        if (!bt || !bt.categories) return;
         bt.categories.forEach(function(cat) {
+            if (!cat || !cat.items) return;
             cat.items = cat.items.filter(function(item) {
                 return item.name || (Number(item.budget) || 0) > 0 || (Number(item.used) || 0) > 0;
             });
@@ -107,6 +109,7 @@ function ensureBudgetStructure(sheet) {
 
 // คำนวณ totals ของ category จาก items
 function recalcBudgetTotals(category) {
+    if (!category || !category.items) return;
     var totalBudget = 0, totalUsed = 0;
     category.items.forEach(function(item) {
         var b = Number(item.budget) || 0;
@@ -124,6 +127,7 @@ function recalcBudgetTotals(category) {
 function calcBudgetGrandTotals(budget) {
     var totalBudget = 0, totalUsed = 0, totalRemaining = 0;
     budget.forEach(function(bt) {
+        if (!bt || !bt.categories) return;
         bt.categories.forEach(function(cat) {
             recalcBudgetTotals(cat);
             totalBudget += cat.totalBudget;
@@ -200,7 +204,7 @@ function renderBudgetContent(budget) {
         }
         html += '</div>';
 
-        bt.categories.forEach(function(cat, catIdx) {
+        (bt.categories || []).forEach(function(cat, catIdx) {
             recalcBudgetTotals(cat);
             html += renderBudgetCategorySection(cat, typeIdx, catIdx);
         });
@@ -262,7 +266,7 @@ function renderBudgetCategorySection(cat, typeIdx, catIdx) {
     html += '<tbody>';
 
     var hasItems = false;
-    cat.items.forEach(function(item, itemIdx) {
+    (cat.items || []).forEach(function(item, itemIdx) {
         var hasData = item.name || (Number(item.budget) || 0) > 0 || (Number(item.used) || 0) > 0;
         if (!hasData && !budgetEditMode) return;
         hasItems = true;
@@ -318,6 +322,12 @@ function updateBudgetEditButtons() {
     var container = document.getElementById('editBudgetBtnContainer');
     if (!container) return;
 
+    // Leader cannot edit budget
+    if (currentUser.role === 'leader') {
+        container.innerHTML = '';
+        return;
+    }
+
     if (budgetEditMode) {
         container.innerHTML =
             '<div class="budget-btn-group">' +
@@ -351,6 +361,7 @@ function saveBudgetEditMode() {
 
     // Recalc all totals
     sheet.budget.forEach(function(bt) {
+        if (!bt || !bt.categories) return;
         bt.categories.forEach(function(cat) {
             recalcBudgetTotals(cat);
         });
@@ -479,7 +490,12 @@ function deleteBudgetType(typeIdx) {
 
 function addBudgetItem(typeIdx, catIdx) {
     var sheet = DATA.sheets[currentSheet];
-    var category = sheet.budget[typeIdx].categories[catIdx];
+    var bt = sheet.budget[typeIdx];
+    if (!bt) return;
+    if (!bt.categories) bt.categories = [];
+    var category = bt.categories[catIdx];
+    if (!category) return;
+    if (!category.items) category.items = [];
     category.items.push({ name: '', budget: 0, used: 0, remaining: 0 });
     renderBudgetContent(sheet.budget);
 

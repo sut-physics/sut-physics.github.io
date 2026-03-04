@@ -35,10 +35,11 @@
     <div id="loginScreen" class="login-screen">
         <div class="login-box">
             <h2>Dashboard Login</h2>
-            <p>กรุณาใส่รหัสผ่านเพื่อเข้าใช้งาน</p>
+            <p>กรุณาเข้าสู่ระบบเพื่อใช้งาน</p>
+            <input type="text" id="usernameInput" placeholder="ชื่อผู้ใช้" onkeypress="if(event.key==='Enter')document.getElementById('passwordInput').focus()">
             <input type="password" id="passwordInput" placeholder="รหัสผ่าน" onkeypress="if(event.key==='Enter')attemptLogin()">
             <button onclick="attemptLogin()">เข้าสู่ระบบ</button>
-            <div id="loginError" class="login-error">รหัสผ่านไม่ถูกต้อง</div>
+            <div id="loginError" class="login-error">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
         </div>
     </div>
 
@@ -49,7 +50,10 @@
             <h1 id="projectTitle">การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์</h1>
             <div class="subtitle" id="projectLeader">หัวหน้าโครงการ: รศ.ดร.อายุทธ ลิ้มพิรัตน์</div>
         </div>
-        <button onclick="logout()" style="padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">ออกจากระบบ</button>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="userDisplay" style="color: rgba(255,255,255,0.85); font-size: 0.85rem;"></span>
+            <button onclick="logout()" style="padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">ออกจากระบบ</button>
+        </div>
     </header>
 
     <nav class="nav-tabs">
@@ -67,6 +71,16 @@
                 <button class="sidebar-action-btn add" onclick="addNewSheet()">+ เพิ่มโครงการ</button>
                 <button class="sidebar-action-btn delete" onclick="showDeleteSheetModal()">- ลบโครงการ</button>
             </div>
+            <div class="sidebar-filters" id="sidebarFilters">
+                <div class="filter-group">
+                    <div class="filter-label">ปีงบประมาณ</div>
+                    <div class="filter-options" id="fiscalYearOptions"></div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">หัวหน้าโครงการ</div>
+                    <div class="filter-options" id="leaderOptions"></div>
+                </div>
+            </div>
             <ul class="sheet-list" id="sheetList">
                 <!-- Dynamic sheet list -->
             </ul>
@@ -78,6 +92,15 @@
                         <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
                     Export
+                </button>
+                <button id="userManagementBtn" class="upload-btn" onclick="showUserManagementModal()" style="width: 100%; text-align: center; cursor: pointer; border: none; margin-top: 8px; display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    จัดการผู้ใช้
                 </button>
             </div>
         </aside>
@@ -116,7 +139,7 @@
                     <div class="card-body">
                         <div id="outputTabs" class="output-tabs"></div>
                         <table class="output-table">
-                            <thead>
+                            <thead id="outputTableHead">
                                 <tr>
                                     <th style="width: 30%">รายการ</th>
                                     <th style="width: 10%">เป้าหมาย</th>
@@ -258,6 +281,31 @@
     </div>
     </div><!-- End appContent -->
 
+    <!-- User Management Modal (Admin only) -->
+    <div class="delete-modal-overlay" id="userManagementModal" style="display:none;">
+        <div class="delete-modal" style="max-width: 600px;">
+            <h3>จัดการผู้ใช้</h3>
+            <div id="userManagementList"></div>
+            <div style="margin-top: 16px; border-top: 1px solid #eee; padding-top: 16px;">
+                <h4 style="margin-bottom: 12px;">เพิ่มผู้ใช้ใหม่</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <input type="text" id="newUserUsername" placeholder="ชื่อผู้ใช้ (username)">
+                    <input type="password" id="newUserPassword" placeholder="รหัสผ่าน">
+                    <input type="text" id="newUserDisplayName" placeholder="ชื่อแสดง (ตรงกับชื่อในคณะผู้วิจัย)">
+                    <select id="newUserRole">
+                        <option value="leader">หัวหน้าโครง</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div id="addUserStatus" style="display:none; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem;"></div>
+                <button class="edit-toggle-btn save-btn" onclick="addNewUser()" style="background: var(--secondary); color: white; padding: 10px 20px; font-size: 0.95rem;">บันทึกผู้ใช้ใหม่</button>
+            </div>
+            <div class="delete-modal-buttons" style="margin-top: 16px;">
+                <button class="btn-cancel" onclick="hideUserManagementModal()">ปิด</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript: Layer 1 - Data & Configuration -->
     <script src="js/config.js"></script>
     <script src="js/default-data.js"></script>
@@ -311,6 +359,7 @@
     <script src="js/file-upload.js"></script>
     <script src="js/firebase-sync.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/user-management.js"></script>
 
     <!-- JavaScript: Layer 4 - Bootstrap -->
     <script src="js/app.js"></script>

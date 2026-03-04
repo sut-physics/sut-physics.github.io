@@ -215,6 +215,37 @@
     gap: 8px;
 }
 
+/* Extend Date Modal */
+.extend-date-modal {
+    min-width: 340px;
+    max-width: 400px;
+}
+
+.extend-date-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.extend-date-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.extend-date-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    white-space: nowrap;
+    min-width: 60px;
+}
+
+.extend-date-field .inline-edit-input {
+    flex: 1;
+}
+
 .export-select-actions {
     display: flex;
     gap: 8px;

@@ -1,0 +1,204 @@
+/* Researchers Table (คณะผู้วิจัย) */
+.researchers-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.researchers-table th,
+.researchers-table td {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    vertical-align: middle;
+}
+
+.researchers-table th {
+    background: var(--primary);
+    color: rgb(255, 255, 255);
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.researchers-table td {
+    text-align: center;
+}
+
+.researchers-table td.researchers-name-cell {
+    text-align: left;
+}
+
+.researchers-table td.researchers-idx-cell {
+    width: 60px;
+}
+
+.researchers-table td.researchers-percent-cell {
+    width: 120px;
+}
+
+.researchers-table tbody tr:nth-child(even) {
+    background: #ffffff;
+}
+
+.researchers-table tbody tr:hover {
+    background: #ffffff;
+}
+
+/* Name + Organization display */
+.researchers-name {
+    font-weight: 600;
+}
+
+.researchers-org {
+    font-size: 0.8rem;
+    color: var(--text-muted, #6c757d);
+    margin-top: 2px;
+}
+
+/* Edit mode inputs */
+.researchers-input {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+}
+
+.researchers-name-input {
+    margin-bottom: 4px;
+}
+
+.researchers-org-input {
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.researchers-percent-input {
+    width: 80px;
+    text-align: center;
+}
+
+/* Delete button */
+.researchers-delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.researchers-delete-btn:hover {
+    background: #c82333;
+}
+
+/* Modal */
+.researchers-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.researchers-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.researchers-modal h3 {
+    margin: 0 0 16px 0;
+    color: var(--primary);
+}
+
+.researchers-modal-field {
+    margin-bottom: 12px;
+}
+
+.researchers-modal-field label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.researchers-modal-field input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.researchers-modal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.researchers-modal-buttons button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.researchers-modal-buttons .confirm-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.researchers-modal-buttons .confirm-btn:hover {
+    opacity: 0.9;
+}
+
+.researchers-modal-buttons .cancel-btn {
+    background: #e9ecef;
+    color: #333;
+}
+
+.researchers-modal-buttons .cancel-btn:hover {
+    background: #dee2e6;
+}
+
+/* Empty state */
+.researchers-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+    font-size: 0.95rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .researchers-table {
+        font-size: 0.8rem;
+    }
+
+    .researchers-table th,
+    .researchers-table td {
+        padding: 6px 6px;
+    }
+
+    .researchers-percent-input {
+        width: 60px;
+    }
+}

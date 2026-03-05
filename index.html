@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - การวิจัยขั้นแนวหน้าด้านฟิสิกส์</title>
+
+    <!-- External Libraries (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="fonts/sarabun-regular.js"></script>
+    <script src="fonts/sarabun-bold.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.25.2/dist/pocketbase.umd.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/tables.css">
+    <link rel="stylesheet" href="css/budget.css">
+    <link rel="stylesheet" href="css/workplan.css">
+    <link rel="stylesheet" href="css/researchers.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/comparison.css">
+    <link rel="stylesheet" href="css/accordion.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h2>Dashboard Login</h2>
+            <p>กรุณาเข้าสู่ระบบเพื่อใช้งาน</p>
+            <input type="text" id="usernameInput" placeholder="ชื่อผู้ใช้" onkeypress="if(event.key==='Enter')document.getElementById('passwordInput').focus()">
+            <input type="password" id="passwordInput" placeholder="รหัสผ่าน" onkeypress="if(event.key==='Enter')attemptLogin()">
+            <button onclick="attemptLogin()">เข้าสู่ระบบ</button>
+            <div id="loginError" class="login-error">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+        </div>
+    </div>
+
+    <!-- Main App Content -->
+    <div id="appContent" class="app-content">
+    <header class="header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 id="projectTitle">การวิจัยขั้นแนวหน้าด้านฟิสิกส์อนุภาคมูลฐานและฟิสิกส์ดาราศาสตร์</h1>
+            <div class="subtitle" id="projectLeader">หัวหน้าโครงการ: รศ.ดร.อายุทธ ลิ้มพิรัตน์</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="userDisplay" style="color: rgba(255,255,255,0.85); font-size: 0.85rem;"></span>
+            <button onclick="logout()" style="padding: 8px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">ออกจากระบบ</button>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+        <button class="nav-tab" data-page="budget">รายละเอียดงบประมาณ</button>
+        <button class="nav-tab" data-page="workplan">แผนการดำเนินงาน</button>
+        <button class="nav-tab" data-page="researchers">คณะผู้วิจัย</button>
+        <button class="nav-tab" data-page="comparison">เปรียบเทียบโครงการ</button>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-title">โครงการ</div>
+            <div class="sidebar-actions">
+                <button class="sidebar-action-btn add" onclick="addNewSheet()">+ เพิ่มโครงการ</button>
+                <button class="sidebar-action-btn delete" onclick="showDeleteSheetModal()">- ลบโครงการ</button>
+            </div>
+            <div class="sidebar-filters" id="sidebarFilters">
+                <div class="filter-group">
+                    <div class="filter-label">ปีงบประมาณ</div>
+                    <div class="filter-options" id="fiscalYearOptions"></div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">หัวหน้าโครงการ</div>
+                    <div class="filter-options" id="leaderOptions"></div>
+                </div>
+            </div>
+            <ul class="sheet-list" id="sheetList">
+                <!-- Dynamic sheet list -->
+            </ul>
+            <div class="upload-section">
+                <button class="upload-btn" onclick="showExportModal()" style="width: 100%; text-align: center; cursor: pointer; border: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export
+                </button>
+                <button id="userManagementBtn" class="upload-btn" onclick="showUserManagementModal()" style="width: 100%; text-align: center; cursor: pointer; border: none; margin-top: 8px; display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    จัดการผู้ใช้
+                </button>
+            </div>
+        </aside>
+
+        <main class="content">
+            <!-- Dashboard Page -->
+            <div id="dashboardPage">
+                <!-- Project Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>ข้อมูลโครงการ</span>
+                        <div class="edit-btn-container" id="editInfoBtnContainer">
+                            <button class="edit-toggle-btn" onclick="toggleEditMode('info')">แก้ไข</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid" id="projectInfo">
+                            <!-- Dynamic project info -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Output Summary -->
+                <div class="summary-cards" id="summaryCards">
+                    <!-- Dynamic summary cards -->
+                </div>
+
+                <!-- Output Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <span>ผลผลิตที่คาดว่าจะได้รับ (Output)</span>
+                        <div class="edit-btn-container" id="editOutputBtnContainer">
+                            <button class="edit-toggle-btn" onclick="toggleEditMode('output')">แก้ไข</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="outputTabs" class="output-tabs"></div>
+                        <table class="output-table">
+                            <thead id="outputTableHead">
+                                <tr>
+                                    <th style="width: 30%">รายการ</th>
+                                    <th style="width: 10%">เป้าหมาย</th>
+                                    <th style="width: 10%">แล้วเสร็จ</th>
+                                    <th style="width: 20%">ความคืบหน้า</th>
+                                    <th style="width: 30%">รายชื่อ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="outputTable">
+                                <!-- Dynamic output data -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Details Page -->
+            <div id="budgetPage" class="hidden">
+                <div class="budget-page-header">
+                    <h2 style="margin-bottom: 0; color: var(--primary);">รายละเอียดงบประมาณ</h2>
+                    <div class="edit-btn-container" id="editBudgetBtnContainer"></div>
+                </div>
+
+                <!-- Budget Summary Cards -->
+                <div class="budget-summary-cards" id="budgetSummaryCards"></div>
+
+                <!-- Budget All Sections Container (rendered by JS) -->
+                <div id="budgetContent"></div>
+            </div>
+
+            <!-- Workplan Page -->
+            <div id="workplanPage" class="hidden">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">แผนการดำเนินงาน</h2>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span>แผนการดำเนินงาน</span>
+                        <div class="edit-btn-container" id="editWorkplanBtnContainer">
+                            <div class="budget-btn-group">
+                                <button class="edit-toggle-btn" onclick="toggleWorkplanEditMode()">แก้ไข</button>
+                                <button class="edit-toggle-btn" onclick="showAddWorkplanItemModal()">+ เพิ่มรายการ</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 20px; overflow-x: auto;">
+                        <table class="workplan-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px">ลำดับ</th>
+                                    <th style="width: 60px">ปีที่</th>
+                                    <th class="activity-col">กิจกรรม</th>
+                                    <th class="month-col">1</th>
+                                    <th class="month-col">2</th>
+                                    <th class="month-col">3</th>
+                                    <th class="month-col">4</th>
+                                    <th class="month-col">5</th>
+                                    <th class="month-col">6</th>
+                                    <th class="month-col">7</th>
+                                    <th class="month-col">8</th>
+                                    <th class="month-col">9</th>
+                                    <th class="month-col">10</th>
+                                    <th class="month-col">11</th>
+                                    <th class="month-col">12</th>
+                                    <th class="percent-col">ร้อยละของกิจกรรม</th>
+                                </tr>
+                            </thead>
+                            <tbody id="workplanTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Researchers Page -->
+            <div id="researchersPage" class="hidden">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">คณะผู้วิจัย</h2>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span>คณะผู้วิจัย</span>
+                        <div class="edit-btn-container" id="editResearchersBtnContainer">
+                            <div class="budget-btn-group">
+                                <button class="edit-toggle-btn" onclick="toggleResearchersEditMode()">แก้ไข</button>
+                                <button class="edit-toggle-btn" onclick="showAddResearcherModal()">+ เพิ่มรายการ</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body" style="padding: 20px; overflow-x: auto;">
+                        <table class="researchers-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px">ลำดับ</th>
+                                    <th>ชื่อ - สกุล</th>
+                                    <th style="width: 160px">ตำแหน่งในโครงการ</th>
+                                    <th style="width: 140px">สัดส่วนการมีส่วนร่วม</th>
+                                </tr>
+                            </thead>
+                            <tbody id="researchersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Page -->
+            <div id="comparisonPage" class="hidden">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">เปรียบเทียบโครงการ</h2>
+
+                <!-- Sheet Selector -->
+                <div class="comparison-selector">
+                    <h3>เลือกโครงการที่ต้องการเปรียบเทียบ</h3>
+                    <div class="help-text">เลือกได้สูงสุด 4 โครงการ (คลิกเพื่อเลือก/ยกเลิก)</div>
+                    <div class="sheet-checkboxes" id="sheetCheckboxes">
+                        <!-- Dynamic checkboxes -->
+                    </div>
+                </div>
+
+                <!-- Project Info Comparison -->
+                <div class="comparison-section" id="comparisonProjectInfo">
+                    <!-- Dynamic project info comparison -->
+                </div>
+
+                <!-- Budget Comparison Chart -->
+                <div class="chart-container" style="margin-bottom: 20px;">
+                    <h3>เปรียบเทียบงบประมาณ</h3>
+                    <canvas id="budgetComparisonChart"></canvas>
+                </div>
+
+                <!-- Progress Comparison Chart -->
+                <div class="chart-container" style="margin-bottom: 20px;">
+                    <h3>เปรียบเทียบ % ความคืบหน้าผลผลิต</h3>
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+
+                <!-- 9 Categories Accordion -->
+                <div class="accordion-container" id="accordionContainer">
+                    <!-- Dynamic accordion items -->
+                </div>
+            </div>
+        </main>
+    </div>
+    </div><!-- End appContent -->
+
+    <!-- User Management Modal (Admin only) -->
+    <div class="delete-modal-overlay" id="userManagementModal" style="display:none;">
+        <div class="delete-modal" style="max-width: 600px;">
+            <h3>จัดการผู้ใช้</h3>
+            <div id="userManagementList"></div>
+            <div style="margin-top: 16px; border-top: 1px solid #eee; padding-top: 16px;">
+                <h4 style="margin-bottom: 12px;">เพิ่มผู้ใช้ใหม่</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                    <input type="text" id="newUserUsername" placeholder="ชื่อผู้ใช้ (username)">
+                    <input type="password" id="newUserPassword" placeholder="รหัสผ่าน">
+                    <input type="text" id="newUserDisplayName" placeholder="ชื่อแสดง (ตรงกับชื่อในคณะผู้วิจัย)">
+                    <select id="newUserRole">
+                        <option value="leader">หัวหน้าโครง</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div id="addUserStatus" style="display:none; padding: 8px 12px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem;"></div>
+                <button class="edit-toggle-btn save-btn" onclick="addNewUser()" style="background: var(--secondary); color: white; padding: 10px 20px; font-size: 0.95rem;">บันทึกผู้ใช้ใหม่</button>
+            </div>
+            <div class="delete-modal-buttons" style="margin-top: 16px;">
+                <button class="btn-cancel" onclick="hideUserManagementModal()">ปิด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript: Layer 1 - Data & Configuration -->
+    <script src="js/config.js"></script>
+    <script src="js/default-data.js"></script>
+    <script src="js/state.js"></script>
+
+    <!-- Delete Sheet Modal -->
+    <div class="delete-modal-overlay" id="deleteSheetModal" style="display:none;">
+        <div class="delete-modal">
+            <h3>ลบโครงการ</h3>
+            <p class="delete-modal-desc">เลือกโครงการที่ต้องการลบ</p>
+            <div class="delete-modal-list" id="deleteSheetList"></div>
+            <div class="delete-modal-buttons">
+                <button class="btn-cancel" onclick="hideDeleteSheetModal()">เสร็จสิ้น</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="delete-modal-overlay" id="exportModal" style="display:none;">
+        <div class="delete-modal export-modal">
+            <h3>Export ข้อมูล</h3>
+            <p class="delete-modal-desc">เลือกโครงการที่ต้องการ Export</p>
+            <div class="export-select-actions">
+                <button class="export-select-btn" onclick="exportSelectAll(true)">เลือกทั้งหมด</button>
+                <button class="export-select-btn" onclick="exportSelectAll(false)">ไม่เลือกทั้งหมด</button>
+            </div>
+            <div class="delete-modal-list" id="exportSheetList"></div>
+            <p class="delete-modal-desc" style="margin-top:12px;">รูปแบบไฟล์</p>
+            <div class="export-format-options">
+                <label class="export-format-label"><input type="radio" name="exportFormat" value="excel" checked> Excel (.xlsx)</label>
+                <label class="export-format-label"><input type="radio" name="exportFormat" value="pdf"> PDF</label>
+            </div>
+            <div class="delete-modal-buttons">
+                <button class="btn-cancel" onclick="hideExportModal()">ยกเลิก</button>
+                <button class="btn-export-confirm" onclick="confirmExport()">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript: Layer 2 - Utilities -->
+    <script src="js/utils.js"></script>
+
+    <!-- JavaScript: Layer 3 - Feature modules -->
+    <script src="js/accordion.js"></script>
+    <script src="js/sheets-sync.js"></script>
+    <script src="js/budget.js"></script>
+    <script src="js/workplan.js"></script>
+    <script src="js/researchers.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/comparison.js"></script>
+    <script src="js/file-upload.js"></script>
+    <script src="js/pocketbase-sync.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user-management.js"></script>
+
+    <!-- JavaScript: Layer 4 - Bootstrap -->
+    <script src="js/app.js"></script>
+</body>
+</html>

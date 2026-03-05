@@ -1,0 +1,413 @@
+/* ============================================================
+   Budget Details Page Styles
+   ============================================================ */
+
+/* Page Header */
+.budget-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.budget-page-header .edit-toggle-btn {
+    background: var(--secondary);
+    border: 1px solid var(--secondary);
+    color: white;
+    padding: 7px 18px;
+    font-size: 0.85rem;
+}
+
+.budget-page-header .edit-toggle-btn:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-light);
+}
+
+.budget-page-header .edit-toggle-btn.save-btn {
+    background: var(--success, #2ecc71);
+    border-color: var(--success, #2ecc71);
+}
+
+.budget-page-header .edit-toggle-btn.save-btn:hover {
+    background: #27ae60;
+    border-color: #27ae60;
+}
+
+.budget-page-header .edit-toggle-btn.cancel-btn {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: var(--text-dark);
+}
+
+.budget-page-header .edit-toggle-btn.cancel-btn:hover {
+    background: rgba(231, 76, 60, 0.8);
+    border-color: rgba(231, 76, 60, 0.8);
+    color: white;
+}
+
+/* Summary Cards */
+.budget-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.budget-summary-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.budget-summary-card.total {
+    border-left: 4px solid var(--secondary);
+}
+
+.budget-summary-card.used {
+    border-left: 4px solid var(--danger);
+}
+
+.budget-summary-card.remaining {
+    border-left: 4px solid var(--success);
+}
+
+.budget-summary-card .budget-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.budget-summary-card .budget-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+/* Budget Type Section */
+.budget-type-section {
+    background: var(--bg-card);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.budget-type-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    background: var(--primary);
+    color: rgb(255, 255, 255);
+}
+
+.budget-type-title {
+    font-size: 1rem;
+    font-weight: 700;
+    flex: 1;
+}
+
+/* Budget Category Section (collapsible) */
+.budget-cat-section {
+    border-bottom: 1px solid var(--border);
+}
+
+.budget-cat-section:last-of-type {
+    border-bottom: none;
+}
+
+.budget-cat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: #b8d0ee;
+    cursor: pointer;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.budget-cat-header:hover {
+    background: #e4eef8;
+}
+
+.budget-cat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.budget-cat-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.budget-cat-arrow {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+}
+
+.budget-cat-section.open .budget-cat-arrow {
+    transform: rotate(180deg);
+}
+
+.budget-cat-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.budget-cat-subtotal {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.budget-cat-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+
+.budget-cat-section.open .budget-cat-content {
+    max-height: 3000px;
+}
+
+/* Section Delete Button */
+.budget-section-delete-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.budget-section-delete-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.budget-cat-header .budget-section-delete-btn {
+    background: #fee2e2;
+    color: var(--danger);
+}
+
+.budget-cat-header .budget-section-delete-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Budget Table */
+.budget-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.budget-table th {
+    background: #e8eef5;
+    color: var(--text-dark);
+    padding: 10px 15px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.budget-table th.number {
+    text-align: right;
+}
+
+.budget-table td {
+    padding: 8px 15px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+}
+
+.budget-table td.number {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.budget-table tr:hover {
+    background: var(--bg-light);
+}
+
+.budget-table .total-row {
+    background: #f0f7ff;
+    font-weight: 700;
+}
+
+.budget-table .total-row td {
+    border-bottom: 2px solid var(--primary);
+}
+
+.budget-table .total-row:hover {
+    background: #e4f0ff;
+}
+
+.budget-table .empty-row td {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Inline inputs in edit mode */
+.budget-inline-input {
+    width: 120px;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.budget-inline-input:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+.budget-name-input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.budget-name-input:focus {
+    outline: none;
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.2);
+}
+
+/* Delete Button in Edit Mode (item level) */
+.budget-delete-cell {
+    text-align: center;
+    width: 40px;
+}
+
+.budget-delete-btn {
+    width: 26px;
+    height: 26px;
+    border: none;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: var(--danger);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.budget-delete-btn:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* Add Item row inside table */
+.budget-add-row td {
+    padding: 6px 15px;
+    border-bottom: none;
+}
+
+.budget-add-item-btn {
+    display: inline-block;
+    padding: 5px 14px;
+    background: transparent;
+    border: 1.5px dashed #e67e22;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #e67e22;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.budget-add-item-btn:hover {
+    background: rgba(230, 126, 34, 0.08);
+    border-color: #d35400;
+    color: #d35400;
+}
+
+.budget-add-section-btn {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 0 20px 12px;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1.5px dashed #e67e22;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #e67e22;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.budget-add-section-btn:hover {
+    background: rgba(230, 126, 34, 0.08);
+    border-color: #d35400;
+    color: #d35400;
+}
+
+.budget-add-type-btn {
+    width: 100%;
+    margin: 0 0 16px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Edit button area */
+.budget-btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .budget-summary-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .budget-inline-input {
+        width: 80px;
+    }
+
+    .budget-cat-header {
+        flex-wrap: wrap;
+    }
+
+    .budget-cat-subtotal {
+        text-align: left;
+        width: 100%;
+        margin-top: 4px;
+    }
+
+    .budget-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}

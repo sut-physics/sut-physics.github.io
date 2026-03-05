@@ -1,0 +1,124 @@
+function showUserManagementModal() {
+    if (currentUser.role !== 'admin') return;
+
+    var modal = document.getElementById('userManagementModal');
+    modal.style.display = 'flex';
+    hideAddUserStatus();
+    renderUserList();
+}
+
+function hideUserManagementModal() {
+    document.getElementById('userManagementModal').style.display = 'none';
+}
+
+function showAddUserStatus(type, msg) {
+    var el = document.getElementById('addUserStatus');
+    if (!el) return;
+    el.style.display = 'block';
+    el.textContent = msg;
+    if (type === 'success') {
+        el.style.background = '#d4edda';
+        el.style.color = '#155724';
+        el.style.border = '1px solid #c3e6cb';
+    } else {
+        el.style.background = '#f8d7da';
+        el.style.color = '#721c24';
+        el.style.border = '1px solid #f5c6cb';
+    }
+    if (type === 'success') {
+        setTimeout(function() { el.style.display = 'none'; }, 3000);
+    }
+}
+
+function hideAddUserStatus() {
+    var el = document.getElementById('addUserStatus');
+    if (el) el.style.display = 'none';
+}
+
+// เก็บ user IDs สำหรับ delete
+var _userRecordIds = [];
+
+function renderUserList() {
+    loadUsers().then(function(users) {
+        _userRecordIds = users.map(function(u) { return u.id; });
+        var container = document.getElementById('userManagementList');
+        if (!users || users.length === 0) {
+            container.innerHTML = '<p style="color: #999;">ไม่มีผู้ใช้ในระบบ</p>';
+            return;
+        }
+
+        var html = '<table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">' +
+            '<thead><tr>' +
+                '<th style="text-align: left; padding: 8px; border-bottom: 2px solid #eee;">ชื่อผู้ใช้</th>' +
+                '<th style="text-align: left; padding: 8px; border-bottom: 2px solid #eee;">ชื่อแสดง</th>' +
+                '<th style="text-align: left; padding: 8px; border-bottom: 2px solid #eee;">สิทธิ์</th>' +
+                '<th style="text-align: center; padding: 8px; border-bottom: 2px solid #eee;">จัดการ</th>' +
+            '</tr></thead><tbody>';
+
+        users.forEach(function(user, idx) {
+            var roleLabel = user.role === 'admin' ? 'Admin' : 'หัวหน้าโครง';
+            html += '<tr>' +
+                '<td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">' + user.username + '</td>' +
+                '<td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">' + (user.displayName || '') + '</td>' +
+                '<td style="padding: 8px; border-bottom: 1px solid #f0f0f0;">' + roleLabel + '</td>' +
+                '<td style="padding: 8px; border-bottom: 1px solid #f0f0f0; text-align: center;">' +
+                    (user.username !== 'admin' ?
+                        '<button onclick="deleteUser(\'' + user.id + '\')" style="background: #e74c3c; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">ลบ</button>' :
+                        '<span style="color: #999; font-size: 0.8rem;">-</span>') +
+                '</td>' +
+            '</tr>';
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    });
+}
+
+function addNewUser() {
+    var username = document.getElementById('newUserUsername').value.trim();
+    var password = document.getElementById('newUserPassword').value;
+    var displayName = document.getElementById('newUserDisplayName').value.trim();
+    var role = document.getElementById('newUserRole').value;
+
+    if (!username || !password || !displayName) {
+        showAddUserStatus('error', 'กรุณากรอกข้อมูลให้ครบทุกช่อง');
+        return;
+    }
+
+    // สร้าง user ใหม่ใน PocketBase
+    pb.collection('users').create({
+        username: username,
+        email: username + '@coe.local',
+        password: password,
+        passwordConfirm: password,
+        role: role,
+        displayName: displayName
+    }).then(function() {
+        // Clear form
+        document.getElementById('newUserUsername').value = '';
+        document.getElementById('newUserPassword').value = '';
+        document.getElementById('newUserDisplayName').value = '';
+        document.getElementById('newUserRole').value = 'leader';
+        renderUserList();
+        showAddUserStatus('success', 'เพิ่มผู้ใช้ "' + displayName + '" เรียบร้อยแล้ว');
+    }).catch(function(err) {
+        console.error('Save user error:', err);
+        var msg = 'ไม่สามารถบันทึกได้';
+        if (err.data && err.data.username) {
+            msg = 'ชื่อผู้ใช้ "' + username + '" มีอยู่แล้ว';
+        }
+        showAddUserStatus('error', msg);
+    });
+}
+
+function deleteUser(recordId) {
+    if (!confirm('ต้องการลบผู้ใช้นี้?')) return;
+
+    pb.collection('users').delete(recordId).then(function() {
+        renderUserList();
+        showAddUserStatus('success', 'ลบผู้ใช้เรียบร้อยแล้ว');
+    }).catch(function(err) {
+        console.error('Delete user error:', err);
+        showAddUserStatus('error', 'ไม่สามารถลบผู้ใช้ได้');
+    });
+}

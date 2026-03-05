@@ -1,0 +1,161 @@
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    background: var(--primary);
+    color: white;
+    padding: 15px 20px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-btn-container {
+    display: flex;
+    gap: 6px;
+}
+
+.edit-toggle-btn {
+    padding: 5px 14px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.edit-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.edit-toggle-btn.save-btn {
+    background: var(--success, #2ecc71);
+    border-color: var(--success, #2ecc71);
+}
+
+.edit-toggle-btn.save-btn:hover {
+    background: #27ae60;
+    border-color: #27ae60;
+}
+
+.edit-toggle-btn.cancel-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.edit-toggle-btn.cancel-btn:hover {
+    background: rgba(231, 76, 60, 0.8);
+    border-color: rgba(231, 76, 60, 0.8);
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.info-box {
+    background: var(--bg-light);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.info-box .value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.info-box .label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+.budget-mismatch-warning {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 6px;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.budget-mismatch-warning.over {
+    color: #c0392b;
+    background: #fdecea;
+}
+
+.budget-mismatch-warning.under {
+    color: #e67e22;
+    background: #fef5e7;
+}
+
+.page-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.page-tab {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: all 0.3s;
+}
+
+.page-tab:hover {
+    border-color: var(--secondary);
+    color: var(--secondary);
+}
+
+.page-tab.active {
+    background: var(--secondary);
+    border-color: var(--secondary);
+    color: white;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-left: 4px solid var(--secondary);
+}
+
+.summary-card .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.summary-card .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 5px;
+}

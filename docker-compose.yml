@@ -1,0 +1,8 @@
+services:
+  pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data:/pb/pb_data
+    restart: unless-stopped

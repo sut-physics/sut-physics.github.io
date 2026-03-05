@@ -459,18 +459,20 @@ function startEditInfoCell(el) {
 
     var sheet = DATA.sheets[currentSheet];
     var rawValue = sheet.info[field] || '';
+    var isBudgetField = (field === 'budget' || field === 'usedBudget' || field === 'remainingBudget');
 
     var input = document.createElement('input');
     input.type = 'text';
     input.className = 'inline-edit-input';
-    input.value = rawValue;
+    // แสดงค่าแบบมี comma ให้อ่านง่ายตอนแก้ไข
+    input.value = isBudgetField ? formatNumber(rawValue) : rawValue;
     el.textContent = '';
     el.appendChild(input);
     input.focus();
     input.select();
 
     function displayValue(val) {
-        if (field === 'budget' || field === 'usedBudget' || field === 'remainingBudget') {
+        if (isBudgetField) {
             el.textContent = formatNumber(val);
         } else {
             el.textContent = val || '-';
@@ -479,12 +481,16 @@ function startEditInfoCell(el) {
 
     function finishEdit() {
         var newValue = input.value.trim();
+        // ลบ comma ออกก่อนเก็บค่า budget
+        if (isBudgetField) {
+            newValue = newValue.replace(/,/g, '');
+        }
         // อัปเดต DATA local เท่านั้น (ยังไม่ save)
         sheet.info[field] = newValue;
         // คำนวณ remainingBudget อัตโนมัติเมื่อแก้งบประมาณ
         if (field === 'budget') {
-            var budget = Number(sheet.info.budget) || 0;
-            var used = Number(sheet.info.usedBudget) || 0;
+            var budget = parseNum(sheet.info.budget);
+            var used = parseNum(sheet.info.usedBudget);
             sheet.info.remainingBudget = String(budget - used);
             var remainEl = document.querySelector('[data-field="remainingBudget"]');
             if (remainEl) remainEl.textContent = formatNumber(sheet.info.remainingBudget);

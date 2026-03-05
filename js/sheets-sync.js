@@ -13,8 +13,8 @@ function saveInfoField(sheetIdx, field, value) {
 
     // เมื่อแก้งบประมาณ → คำนวณ remainingBudget + อัปเดต warning
     if (field === 'budget') {
-        var budget = Number(sheet.info.budget) || 0;
-        var used = Number(sheet.info.usedBudget) || 0;
+        var budget = parseNum(sheet.info.budget);
+        var used = parseNum(sheet.info.usedBudget);
         sheet.info.remainingBudget = String(budget - used);
         var remainEl = document.querySelector('[data-field="remainingBudget"]');
         if (remainEl && !remainEl.querySelector('input')) {
@@ -66,15 +66,15 @@ function syncBudgetToInfo(sheet) {
         bt.categories.forEach(function(cat) {
             if (!cat || !cat.items) return;
             cat.items.forEach(function(item) {
-                totalAllocated += Number(item.budget) || 0;
-                totalUsed += Number(item.used) || 0;
+                totalAllocated += parseNum(item.budget);
+                totalUsed += parseNum(item.used);
             });
         });
     });
 
     // อัปเดต info
     sheet.info.usedBudget = String(totalUsed);
-    var masterBudget = Number(sheet.info.budget) || 0;
+    var masterBudget = parseNum(sheet.info.budget);
     sheet.info.remainingBudget = String(masterBudget - totalUsed);
 
     // อัปเดต UI ใน Dashboard (ถ้ากำลังแสดงอยู่)
@@ -102,13 +102,13 @@ function updateBudgetMismatchWarning(sheet) {
             bt.categories.forEach(function(cat) {
                 if (!cat || !cat.items) return;
                 cat.items.forEach(function(item) {
-                    totalAllocated += Number(item.budget) || 0;
+                    totalAllocated += parseNum(item.budget);
                 });
             });
         });
     }
 
-    var masterBudget = Number(sheet.info.budget) || 0;
+    var masterBudget = parseNum(sheet.info.budget);
     var diff = totalAllocated - masterBudget;
 
     if (diff === 0 || totalAllocated === 0) {
@@ -208,9 +208,9 @@ function exportToExcel(indices) {
             ['ขยายเวลาครั้งที่ 2', (info.extendDates && info.extendDates[1]) || ''],
             ['ขยายเวลาครั้งที่ 3', (info.extendDates && info.extendDates[2]) || ''],
             ['ปีงบประมาณ', info.fiscalYear || ''],
-            ['งบประมาณ', Number(info.budget) || 0],
-            ['งบประมาณที่ใช้ไป', Number(info.usedBudget) || 0],
-            ['งบประมาณคงเหลือ', Number(info.remainingBudget) || 0],
+            ['งบประมาณ', parseNum(info.budget)],
+            ['งบประมาณที่ใช้ไป', parseNum(info.usedBudget)],
+            ['งบประมาณคงเหลือ', parseNum(info.remainingBudget)],
             ['รหัสโครงการ', info.projectCode || '']
         ];
         var wsInfo = XLSX.utils.aoa_to_sheet([['หัวข้อ', 'ข้อมูล']].concat(infoData));
@@ -245,16 +245,16 @@ function exportToExcel(indices) {
                         if (!item.name) return;
                         budgetRows.push([
                             bt.type, cat.name, item.name,
-                            Number(item.budget) || 0,
-                            Number(item.used) || 0,
-                            Number(item.remaining) || 0
+                            parseNum(item.budget),
+                            parseNum(item.used),
+                            parseNum(item.remaining)
                         ]);
                     });
                     budgetRows.push([
                         '', 'รวม ' + cat.name, '',
-                        Number(cat.totalBudget) || 0,
-                        Number(cat.totalUsed) || 0,
-                        Number(cat.totalRemaining) || 0
+                        parseNum(cat.totalBudget),
+                        parseNum(cat.totalUsed),
+                        parseNum(cat.totalRemaining)
                     ]);
                 });
             });

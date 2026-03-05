@@ -1,6 +1,13 @@
+function parseNum(val) {
+    if (!val && val !== 0) return 0;
+    return Number(String(val).replace(/,/g, '')) || 0;
+}
+
 function formatNumber(num) {
-    if (!num) return '-';
-    return Number(num).toLocaleString('th-TH');
+    if (!num && num !== 0) return '-';
+    var n = parseNum(num);
+    if (isNaN(n)) return '-';
+    return n.toLocaleString('th-TH');
 }
 
 function showStatus(type, message) {

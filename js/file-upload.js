@@ -108,7 +108,7 @@ function parseWorksheet(worksheet, sheetName) {
         leader: getCell('B4') || '',
         duration: String(getCell('B6') || ''),
         fiscalYear: String(getCell('B7') || ''),
-        budget: String(getCell('B8') || ''),
+        budget: String(getCell('B8') || '').replace(/,/g, ''),
         projectCode: String(getCell('B9') || sheetName),
         startDate: formatDate(getCell('E6')),
         endDate: formatDate(getCell('G6')),

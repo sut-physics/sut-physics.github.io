@@ -35,7 +35,7 @@ function cleanEmptyBudgetItems(budget) {
         bt.categories.forEach(function(cat) {
             if (!cat || !cat.items) return;
             cat.items = cat.items.filter(function(item) {
-                return item.name || (Number(item.budget) || 0) > 0 || (Number(item.used) || 0) > 0;
+                return item.name || parseNum(item.budget) > 0 || parseNum(item.used) > 0;
             });
         });
     });
@@ -112,8 +112,8 @@ function recalcBudgetTotals(category) {
     if (!category || !category.items) return;
     var totalBudget = 0, totalUsed = 0;
     category.items.forEach(function(item) {
-        var b = Number(item.budget) || 0;
-        var u = Number(item.used) || 0;
+        var b = parseNum(item.budget);
+        var u = parseNum(item.used);
         item.remaining = b - u;
         totalBudget += b;
         totalUsed += u;
@@ -169,9 +169,9 @@ function renderBudgetSummaryCards(budget, info) {
     var displayRemaining = totals.totalRemaining;
 
     if (totals.totalBudget === 0 && info) {
-        displayBudget = Number(info.budget) || 0;
-        displayUsed = Number(info.usedBudget) || 0;
-        displayRemaining = Number(info.remainingBudget) || (displayBudget - displayUsed);
+        displayBudget = parseNum(info.budget);
+        displayUsed = parseNum(info.usedBudget);
+        displayRemaining = parseNum(info.remainingBudget) || (displayBudget - displayUsed);
     }
 
     container.innerHTML =
@@ -267,15 +267,15 @@ function renderBudgetCategorySection(cat, typeIdx, catIdx) {
 
     var hasItems = false;
     (cat.items || []).forEach(function(item, itemIdx) {
-        var hasData = item.name || (Number(item.budget) || 0) > 0 || (Number(item.used) || 0) > 0;
+        var hasData = item.name || parseNum(item.budget) > 0 || parseNum(item.used) > 0;
         if (!hasData && !budgetEditMode) return;
         hasItems = true;
 
         if (budgetEditMode) {
             html += '<tr>' +
                 '<td><input type="text" class="budget-name-input" value="' + escapeHtml(item.name || '') + '" data-type-idx="' + typeIdx + '" data-cat-idx="' + catIdx + '" data-item-idx="' + itemIdx + '" data-field="name"></td>' +
-                '<td class="number"><input type="number" class="budget-inline-input" value="' + (Number(item.budget) || 0) + '" data-type-idx="' + typeIdx + '" data-cat-idx="' + catIdx + '" data-item-idx="' + itemIdx + '" data-field="budget" min="0"></td>' +
-                '<td class="number"><input type="number" class="budget-inline-input" value="' + (Number(item.used) || 0) + '" data-type-idx="' + typeIdx + '" data-cat-idx="' + catIdx + '" data-item-idx="' + itemIdx + '" data-field="used" min="0"></td>' +
+                '<td class="number"><input type="number" class="budget-inline-input" value="' + parseNum(item.budget) + '" data-type-idx="' + typeIdx + '" data-cat-idx="' + catIdx + '" data-item-idx="' + itemIdx + '" data-field="budget" min="0"></td>' +
+                '<td class="number"><input type="number" class="budget-inline-input" value="' + parseNum(item.used) + '" data-type-idx="' + typeIdx + '" data-cat-idx="' + catIdx + '" data-item-idx="' + itemIdx + '" data-field="used" min="0"></td>' +
                 '<td class="number budget-remaining-cell">' + formatNumber(item.remaining) + '</td>' +
                 '<td class="budget-delete-cell"><button class="budget-delete-btn" onclick="deleteBudgetItem(' + typeIdx + ',' + catIdx + ',' + itemIdx + ')" title="ลบรายการ">&times;</button></td>' +
                 '</tr>';
@@ -404,7 +404,7 @@ function attachAllBudgetEditListeners() {
                 item.name = this.value;
             } else {
                 item[field] = Number(this.value) || 0;
-                item.remaining = (Number(item.budget) || 0) - (Number(item.used) || 0);
+                item.remaining = parseNum(item.budget) - parseNum(item.used);
                 recalcBudgetTotals(category);
 
                 // Update remaining cell in this row
